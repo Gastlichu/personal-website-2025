@@ -91,6 +91,31 @@ html, body {
   transform: translateY(-2px);
 }
 
+/* --- Content Container --- */
+/* Semi-transparent backdrop for improved text readability over breathing background */
+/* Note: backdrop-filter removed for performance - blur is expensive with moving particles */
+.content-container {
+  background: rgba(10, 10, 20, 0.85);
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid rgba(144, 72, 160, 0.15);
+}
+
+.content-container-sm {
+  padding: 1rem;
+}
+
+.content-container-lg {
+  padding: 3rem;
+}
+
+/* --- Performance Utilities --- */
+/* Allows browser to skip rendering off-screen content */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
 /* --- Links --- */
 .link {
   color: var(--color-rose);

@@ -47,7 +47,7 @@ const { Content } = await page.render();
   <article class="min-h-screen px-6 py-24">
     <div class="max-w-4xl mx-auto">
       <!-- Header -->
-      <header class="mb-8 text-center">
+      <header class="mb-8 text-center content-container content-container-sm max-w-2xl mx-auto">
         <p class="text-sm text-text-muted mb-2">
           Chapter {page.data.chapter} · Page {page.data.page || '?'}
         </p>
@@ -125,26 +125,29 @@ const { Content } = await page.render();
         </div>
       </nav>
 
-      <!-- Transcript (for accessibility) -->
-      {page.data.transcript && (
-        <details class="max-w-2xl mx-auto mb-8">
-          <summary class="text-sm text-text-muted cursor-pointer hover:text-text-secondary transition-colors">
-            View transcript
-          </summary>
-          <div class="mt-4 p-4 bg-surface/50 rounded-lg border border-wisteria/10">
-            <p class="text-text-secondary text-sm leading-relaxed">
-              {page.data.transcript}
-            </p>
-          </div>
-        </details>
-      )}
+      <!-- Transcript and notes -->
+      <div class="max-w-2xl mx-auto content-container content-container-sm">
+        <!-- Transcript (for accessibility) -->
+        {page.data.transcript && (
+          <details class="mb-8">
+            <summary class="text-sm text-text-muted cursor-pointer hover:text-text-secondary transition-colors">
+              View transcript
+            </summary>
+            <div class="mt-4 p-4 bg-surface/50 rounded-lg border border-wisteria/10">
+              <p class="text-text-secondary text-sm leading-relaxed">
+                {page.data.transcript}
+              </p>
+            </div>
+          </details>
+        )}
 
-      <!-- Author notes -->
-      {page.body && (
-        <div class="max-w-2xl mx-auto prose-comic">
-          <Content />
-        </div>
-      )}
+        <!-- Author notes -->
+        {page.body && (
+          <div class="prose-comic">
+            <Content />
+          </div>
+        )}
+      </div>
     </div>
   </article>
 </Layout>

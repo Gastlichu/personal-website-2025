@@ -1,0 +1,19 @@
+---
+/**
+ * ContentContainer - Semi-transparent backdrop for improved text readability
+ * Use this to wrap content that needs better contrast against the breathing background
+ */
+
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const { size = 'md', class: className = '' } = Astro.props;
+
+const sizeClass = size === 'sm' ? 'content-container-sm' : size === 'lg' ? 'content-container-lg' : '';
+---
+
+<div class:list={['content-container', sizeClass, className]}>
+  <slot />
+</div>

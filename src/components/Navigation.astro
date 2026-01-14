@@ -1,0 +1,541 @@
+---
+/**
+ * Navigation - Dual-mode navigation with traditional menu and constellation view
+ * Default: Kebab menu. Toggle to constellation mode available.
+ */
+---
+
+<!-- Nav Toggle Button -->
+<button
+  id="nav-toggle"
+  class="fixed top-16 right-6 z-50 w-12 h-12 rounded-full bg-surface/80 border border-orchid/30 flex items-center justify-center transition-all duration-300 hover:border-orchid hover:shadow-[0_0_20px_rgba(144,72,160,0.3)] group"
+  aria-label="Toggle navigation"
+  aria-expanded="false"
+  transition:persist="nav-toggle"
+>
+  <!-- Kebab icon (default) -->
+  <svg id="kebab-icon" class="w-5 h-5 text-text-primary transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="5" r="2" />
+    <circle cx="12" cy="12" r="2" />
+    <circle cx="12" cy="19" r="2" />
+  </svg>
+  <!-- Constellation icon (when in constellation mode) -->
+  <svg id="constellation-icon" class="w-5 h-5 text-text-primary transition-transform duration-300 group-hover:scale-110 hidden" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="6" r="2" />
+    <circle cx="6" cy="16" r="2" />
+    <circle cx="18" cy="16" r="2" />
+    <line x1="12" y1="6" x2="6" y2="16" stroke="currentColor" stroke-width="1" opacity="0.5" />
+    <line x1="12" y1="6" x2="18" y2="16" stroke="currentColor" stroke-width="1" opacity="0.5" />
+    <line x1="6" y1="16" x2="18" y2="16" stroke="currentColor" stroke-width="1" opacity="0.5" />
+  </svg>
+</button>
+
+<!-- Mode Toggle Button -->
+<button
+  id="nav-mode-toggle"
+  class="fixed top-16 right-20 z-50 w-10 h-10 rounded-full bg-surface/60 border border-orchid/20 flex items-center justify-center transition-all duration-300 hover:border-orchid/50 hover:bg-surface/80 group"
+  aria-label="Switch navigation mode"
+  title="Switch to constellation view"
+  transition:persist="nav-mode-toggle"
+>
+  <!-- Star icon to switch to constellation -->
+  <svg id="mode-to-constellation" class="w-4 h-4 text-text-muted transition-all duration-300 group-hover:text-orchid group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2L14.09 8.26L21 9.27L16 14.14L17.18 21.02L12 17.77L6.82 21.02L8 14.14L3 9.27L9.91 8.26L12 2Z" />
+  </svg>
+  <!-- Menu icon to switch to kebab -->
+  <svg id="mode-to-kebab" class="w-4 h-4 text-text-muted transition-all duration-300 group-hover:text-orchid group-hover:scale-110 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="4" y1="6" x2="20" y2="6" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+    <line x1="4" y1="18" x2="20" y2="18" />
+  </svg>
+</button>
+
+<!-- Kebab Menu Dropdown -->
+<nav
+  id="kebab-nav"
+  class="fixed top-28 right-6 z-40 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2"
+  aria-label="Site navigation"
+  transition:persist="kebab-nav"
+>
+  <div class="bg-surface/95 border border-orchid/30 rounded-xl shadow-xl shadow-void/50 overflow-hidden min-w-48">
+    <ul class="py-2">
+      <li>
+        <a href="/" data-path="/" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+          Home
+        </a>
+      </li>
+      <li>
+        <a href="/blog" data-path="/blog" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+          Blog
+        </a>
+      </li>
+      <li>
+        <a href="/gallery" data-path="/gallery" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+          Gallery
+        </a>
+      </li>
+      <li>
+        <a href="/games" data-path="/games" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+          Games
+        </a>
+      </li>
+      <li>
+        <a href="/webcomic" data-path="/webcomic" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+          Webcomic
+        </a>
+      </li>
+      <li>
+        <a href="/photos" data-path="/photos" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+          Photos
+        </a>
+      </li>
+      <li>
+        <a href="/links" data-path="/links" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+          Links
+        </a>
+      </li>
+      <li>
+        <a href="/about" data-path="/about" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+          About
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Constellation Overlay -->
+<nav
+  id="constellation-nav"
+  class="fixed inset-0 z-40 opacity-0 pointer-events-none transition-opacity duration-500"
+  aria-label="Site navigation"
+  transition:persist="constellation-nav"
+>
+  <!-- Backdrop -->
+  <div class="nav-backdrop absolute inset-0 bg-void/95"></div>
+
+  <!-- Background Stars -->
+  <div class="starfield absolute inset-0 overflow-hidden" aria-hidden="true">
+    <!-- Tiny distant stars -->
+    <span class="bg-star" style="left: 5%; top: 12%; --size: 1px; --delay: 0s;"></span>
+    <span class="bg-star" style="left: 12%; top: 45%; --size: 1.5px; --delay: 0.5s;"></span>
+    <span class="bg-star" style="left: 8%; top: 72%; --size: 1px; --delay: 1.2s;"></span>
+    <span class="bg-star" style="left: 22%; top: 15%; --size: 2px; --delay: 0.3s;"></span>
+    <span class="bg-star" style="left: 35%; top: 8%; --size: 1px; --delay: 0.8s;"></span>
+    <span class="bg-star" style="left: 42%; top: 35%; --size: 1.5px; --delay: 1.5s;"></span>
+    <span class="bg-star" style="left: 55%; top: 10%; --size: 1px; --delay: 0.2s;"></span>
+    <span class="bg-star" style="left: 65%; top: 18%; --size: 2px; --delay: 1s;"></span>
+    <span class="bg-star" style="left: 78%; top: 8%; --size: 1px; --delay: 0.7s;"></span>
+    <span class="bg-star" style="left: 88%; top: 25%; --size: 1.5px; --delay: 1.3s;"></span>
+    <span class="bg-star" style="left: 92%; top: 48%; --size: 1px; --delay: 0.4s;"></span>
+    <span class="bg-star" style="left: 85%; top: 65%; --size: 2px; --delay: 0.9s;"></span>
+    <span class="bg-star" style="left: 95%; top: 82%; --size: 1px; --delay: 1.1s;"></span>
+    <span class="bg-star" style="left: 75%; top: 88%; --size: 1.5px; --delay: 0.6s;"></span>
+    <span class="bg-star" style="left: 58%; top: 92%; --size: 1px; --delay: 1.4s;"></span>
+    <span class="bg-star" style="left: 40%; top: 85%; --size: 2px; --delay: 0.1s;"></span>
+    <span class="bg-star" style="left: 25%; top: 90%; --size: 1px; --delay: 1.6s;"></span>
+    <span class="bg-star" style="left: 10%; top: 88%; --size: 1.5px; --delay: 0.85s;"></span>
+    <span class="bg-star" style="left: 3%; top: 55%; --size: 1px; --delay: 1.25s;"></span>
+    <span class="bg-star" style="left: 18%; top: 68%; --size: 2px; --delay: 0.45s;"></span>
+    <span class="bg-star" style="left: 82%; top: 38%; --size: 1px; --delay: 1.7s;"></span>
+    <span class="bg-star" style="left: 48%; top: 68%; --size: 1.5px; --delay: 0.15s;"></span>
+    <span class="bg-star" style="left: 62%; top: 75%; --size: 1px; --delay: 0.95s;"></span>
+    <span class="bg-star" style="left: 28%; top: 32%; --size: 2px; --delay: 1.35s;"></span>
+  </div>
+
+  <!-- Star Map -->
+  <svg
+    class="absolute inset-0 w-full h-full"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="none"
+  >
+    <!-- Constellation Lines - connecting 8 stars -->
+    <g class="constellation-lines">
+      <!-- Upper constellation: Games to Home -->
+      <path d="M 15 28 Q 32.5 23 50 22" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.5" class="constellation-line line-1" />
+      <!-- Home to Blog -->
+      <path d="M 50 22 Q 35 30 24 42" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.5" class="constellation-line line-2" />
+      <!-- Home to Gallery -->
+      <path d="M 50 22 Q 65 30 76 42" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.5" class="constellation-line line-3" />
+      <!-- Games to Blog -->
+      <path d="M 15 28 Q 18 36 24 42" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.4" class="constellation-line line-4" />
+      <!-- Blog to Links -->
+      <path d="M 24 42 Q 35 48 50 52" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.5" class="constellation-line line-5" />
+      <!-- Gallery to Links -->
+      <path d="M 76 42 Q 65 48 50 52" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.5" class="constellation-line line-6" />
+      <!-- Links to Webcomic -->
+      <path d="M 50 52 Q 40 58 32 62" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.5" class="constellation-line line-7" />
+      <!-- Links to Photos -->
+      <path d="M 50 52 Q 60 58 68 62" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.5" class="constellation-line line-8" />
+      <!-- Webcomic to About -->
+      <path d="M 32 62 Q 40 71 50 78" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.5" class="constellation-line line-9" />
+      <!-- Photos to About -->
+      <path d="M 68 62 Q 60 71 50 78" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.5" class="constellation-line line-10" />
+      <!-- Webcomic to Photos (cross) -->
+      <path d="M 32 62 Q 50 60 68 62" stroke="url(#line-gradient)" stroke-width="0.2" fill="none" opacity="0.35" class="constellation-line line-11" />
+    </g>
+
+    <!-- Gradient definitions -->
+    <defs>
+      <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#9048a0" />
+        <stop offset="100%" stop-color="#d068a8" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Star Links - 8 rooms (no style guide) -->
+  <div class="absolute inset-0">
+    <!-- Games - top left -->
+    <a href="/games" data-path="/games" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 15%; top: 28%;">
+      <span class="star-glow absolute w-5 h-5 rounded-full bg-aurora/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-aurora/30"></span>
+      <span class="star-core relative w-5 h-5 rounded-full bg-aurora transition-all duration-300 group-hover:bg-bloom group-hover:shadow-[0_0_15px_#56e8c9]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Games</span>
+    </a>
+
+    <!-- Home - top center (primary star) -->
+    <a href="/" data-path="/" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 50%; top: 22%;">
+      <span class="star-glow absolute w-7 h-7 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
+      <span class="star-core relative w-7 h-7 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Home</span>
+    </a>
+
+    <!-- Blog - mid left -->
+    <a href="/blog" data-path="/blog" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 24%; top: 42%;">
+      <span class="star-glow absolute w-5 h-5 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
+      <span class="star-core relative w-5 h-5 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Blog</span>
+    </a>
+
+    <!-- Gallery - mid right -->
+    <a href="/gallery" data-path="/gallery" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 76%; top: 42%;">
+      <span class="star-glow absolute w-5 h-5 rounded-full bg-coral/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-coral/30"></span>
+      <span class="star-core relative w-5 h-5 rounded-full bg-coral transition-all duration-300 group-hover:bg-spark group-hover:shadow-[0_0_15px_#f08070]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Gallery</span>
+    </a>
+
+    <!-- Links - center hub -->
+    <a href="/links" data-path="/links" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 50%; top: 52%;">
+      <span class="star-glow absolute w-5 h-5 rounded-full bg-coral/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-spark/30"></span>
+      <span class="star-core relative w-5 h-5 rounded-full bg-spark transition-all duration-300 group-hover:bg-coral group-hover:shadow-[0_0_15px_#f0d090]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Links</span>
+    </a>
+
+    <!-- Webcomic - lower left -->
+    <a href="/webcomic" data-path="/webcomic" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 32%; top: 62%;">
+      <span class="star-glow absolute w-5 h-5 rounded-full bg-orchid/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-orchid/30"></span>
+      <span class="star-core relative w-5 h-5 rounded-full bg-orchid transition-all duration-300 group-hover:bg-wisteria group-hover:shadow-[0_0_15px_#d078c8]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Webcomic</span>
+    </a>
+
+    <!-- Photos - lower right -->
+    <a href="/photos" data-path="/photos" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 68%; top: 62%;">
+      <span class="star-glow absolute w-5 h-5 rounded-full bg-ember/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-ember/30"></span>
+      <span class="star-core relative w-5 h-5 rounded-full bg-ember transition-all duration-300 group-hover:bg-spark group-hover:shadow-[0_0_15px_#d4a574]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Photos</span>
+    </a>
+
+    <!-- About - bottom center -->
+    <a href="/about" data-path="/about" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 50%; top: 78%;">
+      <span class="star-glow absolute w-5 h-5 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
+      <span class="star-core relative w-5 h-5 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">About</span>
+    </a>
+  </div>
+
+  <!-- Close hint -->
+  <p class="absolute bottom-8 left-1/2 -translate-x-1/2 text-text-muted text-sm font-body">
+    Click a star or press <kbd class="px-2 py-0.5 rounded bg-surface/50 text-text-secondary text-xs">Esc</kbd> to close
+  </p>
+</nav>
+
+<style>
+  /* Kebab menu open state */
+  #kebab-nav.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .nav-item.is-active {
+    color: var(--color-rose);
+    background: rgba(144, 72, 160, 0.1);
+  }
+
+  /* Background stars */
+  .bg-star {
+    position: absolute;
+    width: var(--size, 1px);
+    height: var(--size, 1px);
+    background: var(--color-stardust);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  #constellation-nav.is-open .bg-star {
+    opacity: 0.6;
+    animation: star-twinkle 3s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes star-twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+  }
+
+  /* Constellation styles */
+  .constellation-line {
+    transition: opacity 0.3s ease;
+  }
+
+  #constellation-nav.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Line draw animation on open, then undulate */
+  #constellation-nav.is-open .constellation-line {
+    animation: line-draw 1s ease-out forwards, line-undulate 8s ease-in-out 1s infinite;
+  }
+
+  @keyframes line-draw {
+    from {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Subtle undulating motion for lines - different timing for each */
+  @keyframes line-undulate {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(0.3%); }
+  }
+
+  /* Stagger the undulation timing for organic feel */
+  .line-1 { animation-delay: 0s, 1s; }
+  .line-2 { animation-delay: 0.05s, 1.2s; }
+  .line-3 { animation-delay: 0.1s, 0.8s; }
+  .line-4 { animation-delay: 0.15s, 1.5s; }
+  .line-5 { animation-delay: 0.2s, 0.5s; }
+  .line-6 { animation-delay: 0.25s, 1.8s; }
+  .line-7 { animation-delay: 0.3s, 0.3s; }
+  .line-8 { animation-delay: 0.35s, 1.1s; }
+  .line-9 { animation-delay: 0.4s, 0.9s; }
+  .line-10 { animation-delay: 0.45s, 1.4s; }
+  .line-11 { animation-delay: 0.5s, 0.6s; }
+
+  .star-link {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  #constellation-nav.is-open .star-link {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  /* Wave motion for stars after they appear */
+  #constellation-nav.is-open .star-link {
+    animation: star-float 6s ease-in-out infinite;
+  }
+
+  @keyframes star-float {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    25% { transform: translate(-50%, calc(-50% - 3px)) scale(1); }
+    75% { transform: translate(-50%, calc(-50% + 3px)) scale(1); }
+  }
+
+  /* Stagger star entrance and float timing */
+  #constellation-nav.is-open .star-link:nth-child(1) { transition-delay: 0.1s; animation-delay: 0s; }
+  #constellation-nav.is-open .star-link:nth-child(2) { transition-delay: 0.15s; animation-delay: 0.5s; }
+  #constellation-nav.is-open .star-link:nth-child(3) { transition-delay: 0.2s; animation-delay: 1s; }
+  #constellation-nav.is-open .star-link:nth-child(4) { transition-delay: 0.25s; animation-delay: 1.5s; }
+  #constellation-nav.is-open .star-link:nth-child(5) { transition-delay: 0.3s; animation-delay: 2s; }
+  #constellation-nav.is-open .star-link:nth-child(6) { transition-delay: 0.35s; animation-delay: 2.5s; }
+  #constellation-nav.is-open .star-link:nth-child(7) { transition-delay: 0.4s; animation-delay: 3s; }
+  #constellation-nav.is-open .star-link:nth-child(8) { transition-delay: 0.45s; animation-delay: 3.5s; }
+
+  /* Active star state */
+  .star-link.is-active .star-glow {
+    background: rgba(248, 176, 216, 0.4);
+    filter: blur(12px);
+    transform: scale(1.5);
+  }
+
+  .star-link.is-active .star-core {
+    background: #fff4e0;
+    box-shadow: 0 0 20px #f8b0d8, 0 0 40px #d078c8;
+  }
+
+  .star-link.is-active .star-label {
+    color: #f8b0d8;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .constellation-line,
+    .star-link,
+    .bg-star {
+      animation: none !important;
+      transition: opacity 0.1s;
+    }
+    #constellation-nav.is-open .star-link {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      transition-delay: 0s;
+      animation: none !important;
+    }
+    #constellation-nav.is-open .constellation-line {
+      animation: none !important;
+    }
+    #constellation-nav.is-open .bg-star {
+      opacity: 0.5;
+      animation: none !important;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Initialize navigation functionality
+  function initNavigation() {
+    const toggle = document.getElementById('nav-toggle');
+    const modeToggle = document.getElementById('nav-mode-toggle');
+    const kebabNav = document.getElementById('kebab-nav');
+    const constellationNav = document.getElementById('constellation-nav');
+    const kebabIcon = document.getElementById('kebab-icon');
+    const constellationIcon = document.getElementById('constellation-icon');
+    const modeToConstellation = document.getElementById('mode-to-constellation');
+    const modeToKebab = document.getElementById('mode-to-kebab');
+
+    if (!toggle || !kebabNav || !constellationNav || toggle.dataset.initialized) return;
+    toggle.dataset.initialized = 'true';
+
+    // Get saved mode or default to 'kebab'
+    let navMode = localStorage.getItem('navMode') || 'kebab';
+
+    function updateModeUI() {
+      if (navMode === 'constellation') {
+        kebabIcon.classList.add('hidden');
+        constellationIcon.classList.remove('hidden');
+        modeToConstellation.classList.add('hidden');
+        modeToKebab.classList.remove('hidden');
+        modeToggle.title = 'Switch to menu view';
+      } else {
+        kebabIcon.classList.remove('hidden');
+        constellationIcon.classList.add('hidden');
+        modeToConstellation.classList.remove('hidden');
+        modeToKebab.classList.add('hidden');
+        modeToggle.title = 'Switch to constellation view';
+      }
+    }
+
+    function updateActiveState() {
+      const currentPath = window.location.pathname;
+
+      // Update kebab menu
+      kebabNav.querySelectorAll('.nav-item').forEach(link => {
+        const linkPath = link.getAttribute('data-path');
+        const isActive = currentPath === linkPath ||
+                        currentPath === linkPath + '/' ||
+                        (linkPath !== '/' && currentPath.startsWith(linkPath + '/')) ||
+                        (linkPath === '/' && currentPath === '/');
+        link.classList.toggle('is-active', isActive);
+      });
+
+      // Update constellation
+      constellationNav.querySelectorAll('.star-link').forEach(link => {
+        const linkPath = link.getAttribute('data-path');
+        const isActive = currentPath === linkPath ||
+                        currentPath === linkPath + '/' ||
+                        (linkPath !== '/' && currentPath.startsWith(linkPath + '/')) ||
+                        (linkPath === '/' && currentPath === '/');
+        link.classList.toggle('is-active', isActive);
+        if (isActive) {
+          link.setAttribute('aria-current', 'page');
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
+    }
+
+    function closeAll() {
+      kebabNav.classList.remove('is-open');
+      constellationNav.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function openNav() {
+      if (navMode === 'constellation') {
+        constellationNav.classList.add('is-open');
+      } else {
+        kebabNav.classList.add('is-open');
+      }
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function toggleNav() {
+      const isOpen = kebabNav.classList.contains('is-open') || constellationNav.classList.contains('is-open');
+      if (isOpen) {
+        closeAll();
+      } else {
+        openNav();
+      }
+    }
+
+    function switchMode() {
+      closeAll();
+      navMode = navMode === 'kebab' ? 'constellation' : 'kebab';
+      localStorage.setItem('navMode', navMode);
+      updateModeUI();
+    }
+
+    // Initialize
+    updateModeUI();
+    updateActiveState();
+
+    // Event listeners
+    toggle.addEventListener('click', toggleNav);
+    modeToggle.addEventListener('click', switchMode);
+
+    // Close on backdrop click (constellation)
+    constellationNav.addEventListener('click', (e) => {
+      if (e.target === constellationNav || e.target.classList.contains('nav-backdrop')) {
+        closeAll();
+      }
+    });
+
+    // Close kebab on click outside
+    document.addEventListener('click', (e) => {
+      if (kebabNav.classList.contains('is-open') &&
+          !kebabNav.contains(e.target) &&
+          !toggle.contains(e.target) &&
+          !modeToggle.contains(e.target)) {
+        closeAll();
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const isOpen = kebabNav.classList.contains('is-open') || constellationNav.classList.contains('is-open');
+        if (isOpen) {
+          closeAll();
+          toggle.focus();
+        }
+      }
+    });
+
+    // Handle View Transitions
+    document.addEventListener('astro:before-swap', closeAll);
+    document.addEventListener('astro:after-swap', updateActiveState);
+  }
+
+  // Run on initial load
+  initNavigation();
+
+  // Run after View Transitions
+  document.addEventListener('astro:page-load', initNavigation);
+</script>

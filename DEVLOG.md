@@ -499,6 +499,93 @@ Added actual game projects and fixed a mobile-specific particle bug.
 
 ---
 
+### Phase 14: Dual-Mode Navigation & Performance Polish
+
+Overhauled the navigation system with dual menu modes and added numerous performance and visual refinements.
+
+**What was built:**
+
+**Dual-Mode Navigation System:**
+- Created new `Navigation.astro` component replacing `ConstellationNav.astro`
+- **Kebab mode (default):** Traditional dropdown menu with 8 navigation items
+- **Constellation mode:** Full-screen star map overlay (original design)
+- Toggle button to switch between modes
+- Preference stored in localStorage and persists across sessions
+- Style Guide removed from navigation (still accessible via direct URL)
+
+**Constellation Menu Animations:**
+- SVG lines now animate with undulating/floating motion using bezier curves
+- Navigation stars have subtle floating animation (bounce effect)
+- Added twinkling starfield background (24 decorative stars)
+- Darkened backdrop when overlay is open for better contrast
+- Fixed alignment issue: menu items now properly connect to constellation points
+  - Changed SVG from `preserveAspectRatio="xMidYMid meet"` to `preserveAspectRatio="none"`
+  - SVG coordinates now map directly to percentage positions
+
+**Performance Optimizations:**
+- Removed backdrop-blur from loading overlay (was causing lag on Chrome)
+- Particle canvas fades to 0% opacity during transitions (reduces render load while animation loop continues)
+- Added `content-auto` class using `content-visibility: auto` for off-screen content
+- Particle count increased from 50/25 to **65/30** (desktop/mobile) after initial reduction made page look empty
+- Glow layers increased from 2 to **3** for richer particle rendering
+
+**Content & Accessibility:**
+- Created `ContentContainer.astro` component for readable prose sections
+  - Max-width constraint, comfortable padding
+  - Accessible line lengths and spacing
+- Replaced all placeholder blog posts with real content:
+  - "Building Cosmic Ocean: A Human-AI Collaboration Report" (3,500+ words)
+  - Documents the human-AI collaboration process that built this site
+- Removed placeholder posts (phosphorescent-paths, stonework-remembers, vespertine-hollows)
+
+**Files created:**
+- `src/components/Navigation.astro` — New dual-mode navigation component
+- `src/components/ContentContainer.astro` — Readable content wrapper
+- `src/content/blog/building-cosmic-ocean.md` — Real blog post about the project
+
+**Files removed:**
+- `src/components/ConstellationNav.astro` — Replaced by Navigation.astro
+- `src/content/blog/phosphorescent-paths.md` — Placeholder removed
+- `src/content/blog/the-stonework-remembers.md` — Placeholder removed
+- `src/content/blog/vespertine-hollows.md` — Placeholder removed
+
+**Files modified:**
+- `src/layouts/Layout.astro` — Switched to Navigation component, removed backdrop-blur from overlay
+- `src/components/ParticleField.astro` — Particle count 65/30, 3 glow layers, canvas fade during transitions, removed style-guide from room positions
+- `src/pages/blog/[slug].astro` — Uses ContentContainer for article content
+
+**Technical notes:**
+- Navigation mode stored as `navMode` in localStorage ('kebab' or 'constellation')
+- SVG constellation uses `<path>` with quadratic bezier curves instead of `<line>` for animation flexibility
+- CSS animations use `--delay` custom properties for staggered entrance effects
+- Background stars use `--size` and `--delay` custom properties for variety
+- All animations respect `prefers-reduced-motion`
+- Starfield is `aria-hidden="true"` for accessibility
+
+**CSS Animation Highlights:**
+```css
+/* Line undulation - subtle wave motion */
+@keyframes line-undulate {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(0.3%); }
+}
+
+/* Star floating - gentle bounce */
+@keyframes star-float {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  25% { transform: translate(-50%, calc(-50% - 3px)) scale(1); }
+  75% { transform: translate(-50%, calc(-50% + 3px)) scale(1); }
+}
+
+/* Background star twinkling */
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.2); }
+}
+```
+
+---
+
 ## Current Project State
 
 ### File Structure
@@ -526,13 +613,12 @@ src/
 │   │   ├── Input.astro
 │   │   ├── Link.astro
 │   │   └── index.ts
-│   ├── ConstellationNav.astro
+│   ├── ContentContainer.astro
+│   ├── Navigation.astro
 │   └── ParticleField.astro
 ├── content/
 │   ├── blog/
-│   │   ├── phosphorescent-paths.md
-│   │   ├── the-stonework-remembers.md
-│   │   └── vespertine-hollows.md
+│   │   └── building-cosmic-ocean.md
 │   ├── gallery/
 │   │   ├── abyssal-bloom.md
 │   │   ├── chimeric-whispers.md
@@ -588,9 +674,9 @@ src/
 ### What's Working
 - [x] Breathing background with animated blobs
 - [x] Particle field with cursor interaction
-- [x] Constellation navigation with 9 rooms
+- [x] Navigation with 8 rooms (kebab dropdown + constellation overlay modes)
 - [x] View Transitions between pages
-- [x] Room-specific color vibes (9 rooms, each with unique palette)
+- [x] Room-specific color vibes (9 rooms including hidden style-guide, each with unique palette)
 - [x] Component library (Button, Card, Link, GlowText, Input, Badge)
 - [x] Typography scale
 - [x] Style guide reference page
@@ -612,6 +698,13 @@ src/
 - [x] Smart loading overlay (only appears for slow loads >150ms)
 - [x] Real game entries with preview images (Rocket Upgrade, Séance Sphere)
 - [x] iOS scroll stability (particle field no longer resets on address bar changes)
+- [x] Dual-mode navigation (kebab dropdown + constellation overlay)
+- [x] Navigation mode persistence via localStorage
+- [x] Animated constellation lines (undulating bezier curves)
+- [x] Floating star animations with twinkling starfield background
+- [x] Content container component for readable prose
+- [x] Real blog content (Building Cosmic Ocean collaboration report)
+- [x] Performance: particle fade during transitions, no backdrop-blur
 
 ### Not Yet Implemented
 - [ ] Generate PNG favicon variants from SVG
@@ -642,6 +735,10 @@ src/
 
 5. **iOS resize events:** iOS Safari triggers `resize` events when the address bar hides/shows during scroll. This only changes viewport height, not width. Track width to distinguish real resizes from address bar changes.
 
+6. **Dual navigation modes:** Users can toggle between traditional kebab dropdown and constellation overlay. Preference stored in localStorage as `navMode`. Default is kebab for familiarity, with constellation as an easter egg/aesthetic option.
+
+7. **SVG alignment for constellation:** Using `preserveAspectRatio="none"` allows SVG coordinates to map directly to percentage-positioned DOM elements. Without this, the SVG would maintain aspect ratio and coordinates wouldn't align with menu items.
+
 ---
 
-*Last updated: 2026-01-13*
+*Last updated: 2026-01-13 (Phase 14)*

@@ -72,7 +72,7 @@ const regular = photos.filter(p => !p.data.featured);
         {featured.length > 0 && regular.length > 0 && (
           <h2 class="text-h3 text-text-secondary mb-6">All Photos</h2>
         )}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 content-auto">
           {regular.map((photo) => (
             <a href={`/photos/${photo.slug}`} class="block group">
               <article class="photo-card relative rounded-lg bg-surface/50 border border-ember/20 overflow-hidden transition-all duration-300 hover:border-ember/50">

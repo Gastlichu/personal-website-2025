@@ -43,37 +43,39 @@ function formatDate(date: Date): string {
         </Button>
       </nav>
 
-      <!-- Header -->
-      <header class="mb-12">
-        <time class="text-sm text-text-muted font-mono">
-          {formatDate(post.data.date)}
-        </time>
-        <h1 class="mt-4 text-3xl md:text-4xl font-display font-light text-text-primary">
-          <span class="glow-subtle">{post.data.title}</span>
-        </h1>
-        <p class="mt-4 text-lg text-text-secondary">
-          {post.data.description}
-        </p>
-        {post.data.tags.length > 0 && (
-          <div class="mt-6 flex flex-wrap gap-2">
-            {post.data.tags.map((tag) => (
-              <Badge variant="outline">{tag}</Badge>
-            ))}
-          </div>
-        )}
-      </header>
+      <div class="content-container">
+        <!-- Header -->
+        <header class="mb-12">
+          <time class="text-sm text-text-muted font-mono">
+            {formatDate(post.data.date)}
+          </time>
+          <h1 class="mt-4 text-3xl md:text-4xl font-display font-light text-text-primary">
+            <span class="glow-subtle">{post.data.title}</span>
+          </h1>
+          <p class="mt-4 text-lg text-text-secondary">
+            {post.data.description}
+          </p>
+          {post.data.tags.length > 0 && (
+            <div class="mt-6 flex flex-wrap gap-2">
+              {post.data.tags.map((tag) => (
+                <Badge variant="outline">{tag}</Badge>
+              ))}
+            </div>
+          )}
+        </header>
 
-      <!-- Content -->
-      <div class="prose">
-        <Content />
+        <!-- Content -->
+        <div class="prose">
+          <Content />
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t border-orchid/20">
+          <Button href="/blog" variant="secondary">
+            ← All Posts
+          </Button>
+        </footer>
       </div>
-
-      <!-- Footer -->
-      <footer class="mt-16 pt-8 border-t border-orchid/20">
-        <Button href="/blog" variant="secondary">
-          ← All Posts
-        </Button>
-      </footer>
     </div>
   </article>
 </Layout>

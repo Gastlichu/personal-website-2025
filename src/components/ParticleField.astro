@@ -6,7 +6,7 @@
  */
 ---
 
-<canvas id="particle-field" class="fixed inset-0 pointer-events-none z-0" style="will-change: contents;" aria-hidden="true" transition:persist="particles"></canvas>
+<canvas id="particle-field" class="fixed inset-0 pointer-events-none z-0 transition-opacity duration-200" style="will-change: contents;" aria-hidden="true" transition:persist="particles"></canvas>
 
 <script is:inline>
   // Prevent re-initialization if already running
@@ -32,18 +32,16 @@
 
     // Pre-computed glow layer multipliers (radius multiplier, alpha multiplier)
     const GLOW_LAYERS = [
-      [4, 0.1],
-      [2.5, 0.2],
-      [1.5, 0.4],
+      [3, 0.1],
+      [1.8, 0.25],
       [1, 1],
     ];
     const TWO_PI = Math.PI * 2;
 
-    // Constellation positions (as percentages, matching ConstellationNav)
+    // Constellation positions (as percentages, matching Navigation)
     const roomPositions = {
       '/': { x: 50, y: 22 },
       '/games': { x: 15, y: 28 },
-      '/style-guide': { x: 85, y: 28 },
       '/blog': { x: 24, y: 42 },
       '/gallery': { x: 76, y: 42 },
       '/links': { x: 50, y: 52 },
@@ -67,9 +65,9 @@
     const TRANSITION_DRIFT_DURATION = 400;
 
     function getParticleCount() {
-      if (prefersReducedMotion) return 20;
+      if (prefersReducedMotion) return 15;
       const isMobile = window.innerWidth < 768;
-      return isMobile ? 40 : 80;
+      return isMobile ? 30 : 65;
     }
 
     function resizeCanvas() {
@@ -111,8 +109,8 @@
       const currentOpacity = p.opacity * (0.5 + twinkle * 0.5);
       const currentSize = p.size * (0.8 + twinkle * 0.2);
 
-      // Draw glow layers using pre-computed multipliers
-      for (let i = 0; i < 4; i++) {
+      // Draw glow layers using pre-computed multipliers (2 layers for performance)
+      for (let i = 0; i < GLOW_LAYERS.length; i++) {
         const layer = GLOW_LAYERS[i];
         ctx.beginPath();
         ctx.arc(p.x, p.y, currentSize * layer[0], 0, TWO_PI);
@@ -277,6 +275,21 @@
       const fromPath = window.location.pathname;
       const toPath = new URL(e.to).pathname;
       triggerTransitionDrift(fromPath, toPath);
+    });
+
+    // Fade particles during transitions for performance
+    // Reduces render load while keeping animation loop running
+    document.addEventListener('astro:before-preparation', () => {
+      canvas.style.opacity = '0';
+    });
+
+    document.addEventListener('astro:after-swap', () => {
+      canvas.style.opacity = '1';
+    });
+
+    // Also restore on page load (initial load and fallback)
+    document.addEventListener('astro:page-load', () => {
+      canvas.style.opacity = '1';
     });
 
     requestAnimationFrame(animate);

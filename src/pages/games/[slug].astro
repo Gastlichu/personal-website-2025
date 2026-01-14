@@ -45,74 +45,76 @@ function getStatusColor(status: string) {
         </Button>
       </nav>
 
-      <!-- Header -->
-      <header class="mb-12">
-        <div class="flex flex-wrap gap-2 mb-4">
-          <Badge variant={getStatusColor(game.data.status)}>{game.data.status}</Badge>
-          {game.data.platform.map((p) => (
-            <Badge variant="outline">{p}</Badge>
-          ))}
+      <div class="content-container mb-12">
+        <!-- Header -->
+        <header class="mb-8">
+          <div class="flex flex-wrap gap-2 mb-4">
+            <Badge variant={getStatusColor(game.data.status)}>{game.data.status}</Badge>
+            {game.data.platform.map((p) => (
+              <Badge variant="outline">{p}</Badge>
+            ))}
+          </div>
+
+          <h1 class="text-3xl md:text-4xl font-display font-light text-text-primary mb-4">
+            <span class="glow-game">{game.data.title}</span>
+          </h1>
+
+          <p class="text-lg text-text-secondary leading-relaxed mb-6">
+            {game.data.description}
+          </p>
+
+          <!-- Action buttons -->
+          <div class="flex flex-wrap gap-4">
+            {game.data.playUrl && (
+              <Button href={game.data.playUrl} variant="primary">
+                Play Now
+              </Button>
+            )}
+            {game.data.sourceUrl && (
+              <Button href={game.data.sourceUrl} variant="secondary">
+                View Source
+              </Button>
+            )}
+          </div>
+        </header>
+
+        <!-- Game Image -->
+        <div class="aspect-video rounded-lg bg-surface border border-aurora/20 flex items-center justify-center overflow-hidden mb-8">
+          {game.data.image ? (
+            <Image
+              src={game.data.image}
+              alt={game.data.title}
+              width={1200}
+              height={675}
+              class="w-full h-full object-cover"
+              loading="eager"
+            />
+          ) : (
+            <span class="text-8xl text-aurora/30 font-display font-light select-none">◈</span>
+          )}
         </div>
 
-        <h1 class="text-3xl md:text-4xl font-display font-light text-text-primary mb-4">
-          <span class="glow-game">{game.data.title}</span>
-        </h1>
-
-        <p class="text-lg text-text-secondary leading-relaxed mb-6">
-          {game.data.description}
-        </p>
-
-        <!-- Action buttons -->
-        <div class="flex flex-wrap gap-4">
-          {game.data.playUrl && (
-            <Button href={game.data.playUrl} variant="primary">
-              Play Now
-            </Button>
-          )}
-          {game.data.sourceUrl && (
-            <Button href={game.data.sourceUrl} variant="secondary">
-              View Source
-            </Button>
-          )}
+        <!-- Content -->
+        <div class="prose-game mb-8">
+          <Content />
         </div>
-      </header>
 
-      <!-- Game Image -->
-      <div class="aspect-video rounded-lg bg-surface border border-aurora/20 flex items-center justify-center overflow-hidden mb-12">
-        {game.data.image ? (
-          <Image
-            src={game.data.image}
-            alt={game.data.title}
-            width={1200}
-            height={675}
-            class="w-full h-full object-cover"
-            loading="eager"
-          />
-        ) : (
-          <span class="text-8xl text-aurora/30 font-display font-light select-none">◈</span>
+        <!-- Tags -->
+        {game.data.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mb-8">
+            {game.data.tags.map((tag) => (
+              <Badge variant="outline">{tag}</Badge>
+            ))}
+          </div>
         )}
+
+        <!-- Footer -->
+        <footer class="pt-8 border-t border-aurora/20">
+          <Button href="/games" variant="secondary">
+            ← All Games
+          </Button>
+        </footer>
       </div>
-
-      <!-- Content -->
-      <div class="prose-game mb-12">
-        <Content />
-      </div>
-
-      <!-- Tags -->
-      {game.data.tags.length > 0 && (
-        <div class="flex flex-wrap gap-2 mb-12">
-          {game.data.tags.map((tag) => (
-            <Badge variant="outline">{tag}</Badge>
-          ))}
-        </div>
-      )}
-
-      <!-- Footer -->
-      <footer class="pt-8 border-t border-aurora/20">
-        <Button href="/games" variant="secondary">
-          ← All Games
-        </Button>
-      </footer>
     </div>
   </article>
 </Layout>

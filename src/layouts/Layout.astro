@@ -2,7 +2,7 @@
 import { ViewTransitions, fade } from 'astro:transitions'
 import '../styles/global.css'
 import ParticleField from '../components/ParticleField.astro'
-import ConstellationNav from '../components/ConstellationNav.astro'
+import Navigation from '../components/Navigation.astro'
 
 export type RoomVibe = 'home' | 'blog' | 'gallery' | 'about' | 'styleguide' | 'games' | 'webcomic' | 'photos' | 'links';
 
@@ -99,7 +99,7 @@ const colors = roomColors[room];
     <ParticleField />
 
     <!-- Navigation -->
-    <ConstellationNav />
+    <Navigation />
 
     <!-- Under Construction Banner -->
     <div class="fixed top-0 inset-x-0 z-40 bg-surface/80 backdrop-blur-sm border-b border-orchid/20 py-2 px-4 text-center" transition:persist="banner">
@@ -236,6 +236,7 @@ const colors = roomColors[room];
   }
 
   /* Subtle Transition Overlay - only appears for slow loads */
+  /* Note: backdrop-filter removed for performance */
   .transition-overlay {
     position: fixed;
     inset: 0;
@@ -243,12 +244,11 @@ const colors = roomColors[room];
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.15s ease-out;
-    backdrop-filter: blur(0px);
+    background: rgba(10, 10, 20, 0.6);
   }
 
   .transition-overlay.is-active {
     opacity: 1;
-    backdrop-filter: blur(4px);
   }
 
   .overlay-glow {
@@ -285,11 +285,6 @@ const colors = roomColors[room];
     }
     .transition-overlay {
       transition: opacity 0.1s;
-      backdrop-filter: none;
-    }
-    .transition-overlay.is-active {
-      backdrop-filter: none;
-      background: rgba(10, 10, 20, 0.5);
     }
   }
 </style>

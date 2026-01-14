@@ -35,7 +35,7 @@ function formatDate(date: Date): string {
       </header>
 
       <!-- Posts -->
-      <div class="space-y-8">
+      <div class="space-y-8 content-auto">
         {posts.map((post) => (
           <a href={`/blog/${post.slug}`} class="block group">
             <Card interactive class="p-6">
