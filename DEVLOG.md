@@ -456,6 +456,49 @@ Optimized page transitions for snappier navigation and added a subtle loading ov
 
 ---
 
+### Phase 13: Real Games & iOS Fix
+
+Added actual game projects and fixed a mobile-specific particle bug.
+
+**What was built:**
+
+**Real Games Added:**
+- **Rocket Upgrade** — Space adventure with ship customization, multi-planet progression, resource collection
+  - Links to: `https://gastlichu.com/games/Build_a_Rocket/index.html`
+  - Tags: space, shooter, customization, arcade
+- **Séance Sphere** — Supernatural digital pet simulation (gothic Tamagotchi)
+  - Links to: `https://gastlichu.com/games/seance-sphere/seance-sphere.html`
+  - Tags: virtual pet, tamagotchi, supernatural, casual
+- Both games have preview images in `src/assets/games/`
+- Removed all placeholder games (Echoes of the Void, Bioluminescent, Constellation Keeper)
+
+**iOS Particle Fix:**
+- Fixed bug where stars would reset constantly when scrolling on iOS
+- Cause: iOS Safari's address bar hide/show triggers `resize` events, which was reinitializing all particles
+- Fix: Only reinitialize particles when viewport **width** changes (actual resize/orientation), not height-only changes from address bar
+
+**Files created:**
+- `src/content/games/rocket-upgrade.md` — Real game entry
+- `src/content/games/seance-sphere.md` — Real game entry
+- `src/assets/games/rocket-upgrade.png` — Game preview image
+- `src/assets/games/seance-sphere.png` — Game preview image
+
+**Files removed:**
+- `src/content/games/echoes-of-the-void.md`
+- `src/content/games/bioluminescent.md`
+- `src/content/games/constellation-keeper.md`
+
+**Files modified:**
+- `src/components/ParticleField.astro` — Added width tracking to prevent iOS resize resets
+- `src/assets/games/README.md` — Updated path instructions
+
+**Technical notes:**
+- Image paths from content files use `../../assets/games/` (two levels up from `src/content/games/` to `src/assets/games/`)
+- Astro auto-optimizes game images on build (e.g., 1253KB → 35KB for seance-sphere)
+- iOS address bar resize only changes height; tracking width prevents false positives
+
+---
+
 ## Current Project State
 
 ### File Structure
@@ -468,8 +511,12 @@ public/
 
 src/
 ├── assets/
-│   └── gallery/
-│       └── README.md
+│   ├── gallery/
+│   │   └── README.md
+│   └── games/
+│       ├── README.md
+│       ├── rocket-upgrade.png
+│       └── seance-sphere.png
 ├── components/
 │   ├── ui/
 │   │   ├── Badge.astro
@@ -494,9 +541,8 @@ src/
 │   │   ├── stardust-memory.md
 │   │   └── the-waning-light.md
 │   ├── games/
-│   │   ├── bioluminescent.md
-│   │   ├── constellation-keeper.md
-│   │   └── echoes-of-the-void.md
+│   │   ├── rocket-upgrade.md
+│   │   └── seance-sphere.md
 │   ├── photos/
 │   │   ├── desert-stars.md
 │   │   ├── forest-fog.md
@@ -564,6 +610,8 @@ src/
 - [x] Links room (linktree-style external links directory)
 - [x] Optimized transitions (150ms content fade, 300ms blob transitions)
 - [x] Smart loading overlay (only appears for slow loads >150ms)
+- [x] Real game entries with preview images (Rocket Upgrade, Séance Sphere)
+- [x] iOS scroll stability (particle field no longer resets on address bar changes)
 
 ### Not Yet Implemented
 - [ ] Generate PNG favicon variants from SVG
@@ -591,6 +639,8 @@ src/
 3. **Room colors:** Rather than animating blob colors (which would require JavaScript), using Tailwind classes with `transition-colors` for smooth CSS transitions when the page swaps.
 
 4. **Component approach:** Built both utility classes AND Astro components. Classes for flexibility, components for convenience and props-based variants.
+
+5. **iOS resize events:** iOS Safari triggers `resize` events when the address bar hides/shows during scroll. This only changes viewport height, not width. Track width to distinguish real resizes from address bar changes.
 
 ---
 

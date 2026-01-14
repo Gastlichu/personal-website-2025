@@ -216,12 +216,22 @@
       mouseDecayTimer = MOUSE_DECAY_TIME;
     }
 
+    // Track width to avoid iOS address bar resize triggering particle reset
+    let lastWidth = window.innerWidth;
+
     resizeCanvas();
     initParticles();
 
     window.addEventListener('resize', () => {
+      const newWidth = window.innerWidth;
       resizeCanvas();
-      initParticles();
+
+      // Only reinitialize particles on actual width change (orientation/window resize)
+      // iOS address bar show/hide only changes height, not width
+      if (newWidth !== lastWidth) {
+        lastWidth = newWidth;
+        initParticles();
+      }
     });
 
     document.addEventListener('mousemove', handleMouseMove);
