@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 @theme {
+  /* Typography */
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
   /* Backgrounds */
   --color-void: #0a0a14;
   --color-deep: #181828;
