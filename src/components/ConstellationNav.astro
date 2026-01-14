@@ -1,0 +1,251 @@
+---
+/**
+ * ConstellationNav - Interactive star map navigation
+ * Rooms appear as stars connected by constellation lines
+ */
+---
+
+<!-- Nav Toggle Button -->
+<button
+  id="nav-toggle"
+  class="fixed top-6 right-6 z-50 w-12 h-12 rounded-full bg-surface/80 backdrop-blur-sm border border-orchid/30 flex items-center justify-center transition-all duration-300 hover:border-orchid hover:shadow-[0_0_20px_rgba(144,72,160,0.3)] group"
+  aria-label="Toggle navigation"
+  aria-expanded="false"
+  transition:persist="nav-toggle"
+>
+  <svg class="w-5 h-5 text-text-primary transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="6" r="2" />
+    <circle cx="6" cy="16" r="2" />
+    <circle cx="18" cy="16" r="2" />
+    <line x1="12" y1="6" x2="6" y2="16" stroke="currentColor" stroke-width="1" opacity="0.5" />
+    <line x1="12" y1="6" x2="18" y2="16" stroke="currentColor" stroke-width="1" opacity="0.5" />
+    <line x1="6" y1="16" x2="18" y2="16" stroke="currentColor" stroke-width="1" opacity="0.5" />
+  </svg>
+</button>
+
+<!-- Constellation Overlay -->
+<nav
+  id="constellation-nav"
+  class="fixed inset-0 z-40 opacity-0 pointer-events-none transition-opacity duration-500"
+  aria-label="Site navigation"
+  transition:persist="constellation-nav"
+>
+  <!-- Backdrop -->
+  <div class="nav-backdrop absolute inset-0 bg-void/90 backdrop-blur-md"></div>
+
+  <!-- Star Map -->
+  <svg
+    class="absolute inset-0 w-full h-full"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="xMidYMid meet"
+  >
+    <!-- Constellation Lines -->
+    <g class="constellation-lines">
+      <line x1="50" y1="30" x2="25" y2="50" stroke="url(#line-gradient)" stroke-width="0.15" opacity="0.4" class="constellation-line" />
+      <line x1="50" y1="30" x2="75" y2="50" stroke="url(#line-gradient)" stroke-width="0.15" opacity="0.4" class="constellation-line" />
+      <line x1="25" y1="50" x2="50" y2="70" stroke="url(#line-gradient)" stroke-width="0.15" opacity="0.4" class="constellation-line" />
+      <line x1="75" y1="50" x2="50" y2="70" stroke="url(#line-gradient)" stroke-width="0.15" opacity="0.4" class="constellation-line" />
+      <line x1="75" y1="50" x2="85" y2="30" stroke="url(#line-gradient)" stroke-width="0.15" opacity="0.4" class="constellation-line" />
+    </g>
+
+    <!-- Gradient definitions -->
+    <defs>
+      <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#9048a0" />
+        <stop offset="100%" stop-color="#d068a8" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Star Links -->
+  <div class="absolute inset-0">
+    <a href="/" data-path="/" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 50%; top: 30%;">
+      <span class="star-glow absolute w-6 h-6 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
+      <span class="star-core relative w-6 h-6 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Home</span>
+    </a>
+
+    <a href="/blog" data-path="/blog" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 25%; top: 50%;">
+      <span class="star-glow absolute w-5 h-5 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
+      <span class="star-core relative w-5 h-5 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Blog</span>
+    </a>
+
+    <a href="/gallery" data-path="/gallery" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 75%; top: 50%;">
+      <span class="star-glow absolute w-5 h-5 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
+      <span class="star-core relative w-5 h-5 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Gallery</span>
+    </a>
+
+    <a href="/about" data-path="/about" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 50%; top: 70%;">
+      <span class="star-glow absolute w-4 h-4 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
+      <span class="star-core relative w-4 h-4 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">About</span>
+    </a>
+
+    <a href="/style-guide" data-path="/style-guide" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 85%; top: 30%;">
+      <span class="star-glow absolute w-4 h-4 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
+      <span class="star-core relative w-4 h-4 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
+      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Style Guide</span>
+    </a>
+  </div>
+
+  <!-- Close hint -->
+  <p class="absolute bottom-8 left-1/2 -translate-x-1/2 text-text-muted text-sm font-body">
+    Click a star or press <kbd class="px-2 py-0.5 rounded bg-surface/50 text-text-secondary text-xs">Esc</kbd> to close
+  </p>
+</nav>
+
+<style>
+  .constellation-line {
+    transition: opacity 0.3s ease;
+  }
+
+  #constellation-nav.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #constellation-nav.is-open .constellation-line {
+    animation: line-draw 1s ease-out forwards;
+  }
+
+  @keyframes line-draw {
+    from {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .star-link {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  #constellation-nav.is-open .star-link {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  #constellation-nav.is-open .star-link:nth-child(1) { transition-delay: 0.1s; }
+  #constellation-nav.is-open .star-link:nth-child(2) { transition-delay: 0.2s; }
+  #constellation-nav.is-open .star-link:nth-child(3) { transition-delay: 0.3s; }
+  #constellation-nav.is-open .star-link:nth-child(4) { transition-delay: 0.4s; }
+  #constellation-nav.is-open .star-link:nth-child(5) { transition-delay: 0.5s; }
+
+  /* Active star state */
+  .star-link.is-active .star-glow {
+    background: rgba(248, 176, 216, 0.4);
+    filter: blur(12px);
+    transform: scale(1.5);
+  }
+
+  .star-link.is-active .star-core {
+    background: #fff4e0;
+    box-shadow: 0 0 20px #f8b0d8, 0 0 40px #d078c8;
+  }
+
+  .star-link.is-active .star-label {
+    color: #f8b0d8;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .constellation-line,
+    .star-link {
+      animation: none;
+      transition: opacity 0.1s;
+    }
+    #constellation-nav.is-open .star-link {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      transition-delay: 0s;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Initialize navigation functionality
+  function initConstellationNav() {
+    const toggle = document.getElementById('nav-toggle');
+    const nav = document.getElementById('constellation-nav');
+
+    if (!toggle || !nav || toggle.dataset.initialized) return;
+    toggle.dataset.initialized = 'true';
+
+    function updateActiveState() {
+      const currentPath = window.location.pathname;
+      const links = nav.querySelectorAll('.star-link');
+
+      links.forEach(link => {
+        const linkPath = link.getAttribute('data-path');
+        // Handle both exact match and trailing slash variations
+        const isActive = currentPath === linkPath ||
+                        currentPath === linkPath + '/' ||
+                        (linkPath === '/' && currentPath === '/');
+
+        if (isActive) {
+          link.classList.add('is-active');
+          link.setAttribute('aria-current', 'page');
+        } else {
+          link.classList.remove('is-active');
+          link.removeAttribute('aria-current');
+        }
+      });
+    }
+
+    function openNav() {
+      nav.classList.add('is-open');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeNav() {
+      nav.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleNav() {
+      if (nav.classList.contains('is-open')) {
+        closeNav();
+      } else {
+        openNav();
+      }
+    }
+
+    // Toggle button click
+    toggle.addEventListener('click', toggleNav);
+
+    // Close on backdrop click
+    nav.addEventListener('click', (e) => {
+      if (e.target === nav || e.target.classList.contains('nav-backdrop')) {
+        closeNav();
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('is-open')) {
+        closeNav();
+        toggle.focus();
+      }
+    });
+
+    // Handle View Transitions - close nav before swap
+    document.addEventListener('astro:before-swap', closeNav);
+
+    // Update active state after navigation
+    document.addEventListener('astro:after-swap', updateActiveState);
+
+    // Initial active state
+    updateActiveState();
+  }
+
+  // Run on initial load
+  initConstellationNav();
+
+  // Run after View Transitions
+  document.addEventListener('astro:page-load', initConstellationNav);
+</script>

@@ -1,0 +1,171 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<Layout title={`${post.data.title} | Cosmic Ocean`} room="blog">
+  <article class="min-h-screen px-6 py-24">
+    <div class="max-w-2xl mx-auto">
+      <!-- Back link -->
+      <nav class="mb-8">
+        <Button href="/blog" variant="ghost" size="sm">
+          ← Back to Blog
+        </Button>
+      </nav>
+
+      <!-- Header -->
+      <header class="mb-12">
+        <time class="text-sm text-text-muted font-mono">
+          {formatDate(post.data.date)}
+        </time>
+        <h1 class="mt-4 text-3xl md:text-4xl font-display font-light text-text-primary">
+          <span class="glow-subtle">{post.data.title}</span>
+        </h1>
+        <p class="mt-4 text-lg text-text-secondary">
+          {post.data.description}
+        </p>
+        {post.data.tags.length > 0 && (
+          <div class="mt-6 flex flex-wrap gap-2">
+            {post.data.tags.map((tag) => (
+              <Badge variant="outline">{tag}</Badge>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <!-- Content -->
+      <div class="prose">
+        <Content />
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-16 pt-8 border-t border-orchid/20">
+        <Button href="/blog" variant="secondary">
+          ← All Posts
+        </Button>
+      </footer>
+    </div>
+  </article>
+</Layout>
+
+<style is:global>
+  /* Prose styles for blog content */
+  .prose {
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    line-height: 1.7;
+  }
+
+  .prose h2 {
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose h3 {
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose p {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose a {
+    color: var(--color-rose);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .prose a:hover {
+    border-bottom-color: var(--color-rose);
+  }
+
+  .prose strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .prose em {
+    font-style: italic;
+  }
+
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--color-surface);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+  }
+
+  .prose pre {
+    background: var(--color-surface);
+    border: 1px solid rgba(144, 72, 160, 0.2);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .prose pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .prose ul,
+  .prose ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose blockquote {
+    border-left: 3px solid var(--color-orchid);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  .prose hr {
+    border: none;
+    border-top: 1px solid rgba(144, 72, 160, 0.2);
+    margin: 2rem 0;
+  }
+</style>

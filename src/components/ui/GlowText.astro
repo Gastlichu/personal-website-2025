@@ -1,0 +1,35 @@
+---
+/**
+ * GlowText - Text with luminescent glow effect
+ *
+ * @example
+ * <GlowText>Glowing heading</GlowText>
+ * <GlowText variant="warm">Warm glow</GlowText>
+ * <GlowText as="h2" variant="subtle">Subtle H2</GlowText>
+ */
+
+interface Props {
+  as?: 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'p';
+  variant?: 'default' | 'subtle' | 'warm' | 'soft';
+  class?: string;
+}
+
+const {
+  as: Element = 'span',
+  variant = 'default',
+  class: className = '',
+} = Astro.props;
+
+const glowClass = {
+  default: 'glow',
+  subtle: 'glow-subtle',
+  warm: 'glow-warm',
+  soft: 'glow-soft',
+}[variant];
+
+const classes = [glowClass, className].filter(Boolean).join(' ');
+---
+
+<Element class={classes}>
+  <slot />
+</Element>

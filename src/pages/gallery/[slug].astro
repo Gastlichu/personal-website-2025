@@ -1,0 +1,113 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+
+export async function getStaticPaths() {
+  const artworks = await getCollection('gallery');
+  return artworks.map((artwork) => ({
+    params: { slug: artwork.slug },
+    props: { artwork },
+  }));
+}
+
+interface Props {
+  artwork: CollectionEntry<'gallery'>;
+}
+
+const { artwork } = Astro.props;
+const { Content } = await artwork.render();
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+  });
+}
+---
+
+<Layout title={`${artwork.data.title} | Cosmic Ocean`} room="gallery">
+  <article class="min-h-screen px-6 py-24">
+    <div class="max-w-4xl mx-auto">
+      <!-- Back link -->
+      <nav class="mb-8">
+        <Button href="/gallery" variant="ghost" size="sm">
+          ← Back to Gallery
+        </Button>
+      </nav>
+
+      <!-- Artwork Display -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Image placeholder -->
+        <div class="aspect-[4/5] rounded-lg bg-surface border border-coral/20 flex items-center justify-center">
+          <span class="text-8xl text-coral/30 font-display font-light select-none">✦</span>
+        </div>
+
+        <!-- Details -->
+        <div>
+          <header>
+            {artwork.data.featured && (
+              <Badge variant="warm" class="mb-3">Featured</Badge>
+            )}
+            <h1 class="text-3xl md:text-4xl font-display font-light text-text-primary">
+              <span class="glow-warm">{artwork.data.title}</span>
+            </h1>
+
+            <dl class="mt-6 space-y-3">
+              <div class="flex gap-4">
+                <dt class="text-text-muted w-20">Date</dt>
+                <dd class="text-text-secondary">{formatDate(artwork.data.date)}</dd>
+              </div>
+              <div class="flex gap-4">
+                <dt class="text-text-muted w-20">Medium</dt>
+                <dd class="text-text-secondary">{artwork.data.medium}</dd>
+              </div>
+            </dl>
+
+            {artwork.data.tags.length > 0 && (
+              <div class="mt-6 flex flex-wrap gap-2">
+                {artwork.data.tags.map((tag) => (
+                  <Badge variant="outline">{tag}</Badge>
+                ))}
+              </div>
+            )}
+          </header>
+
+          <!-- Description -->
+          {artwork.data.description && (
+            <p class="mt-8 text-text-secondary leading-relaxed">
+              {artwork.data.description}
+            </p>
+          )}
+
+          <!-- Content (artist notes) -->
+          <div class="mt-8 prose-gallery">
+            <Content />
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-16 pt-8 border-t border-coral/20">
+        <Button href="/gallery" variant="secondary">
+          ← All Works
+        </Button>
+      </footer>
+    </div>
+  </article>
+</Layout>
+
+<style is:global>
+  .prose-gallery {
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .prose-gallery p {
+    margin-bottom: 1rem;
+  }
+</style>

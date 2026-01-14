@@ -2,10 +2,36 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Cosmic Ocean">
-  <main class="flex items-center justify-center min-h-screen">
-    <h1 class="text-5xl font-display font-light text-rose">
-      Cosmic Ocean Lives!
+<Layout title="José Angel | Cosmic Ocean" room="home">
+  <div class="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+    <!-- Title with glow -->
+    <h1 class="text-5xl md:text-7xl font-display font-light text-text-primary mb-4 tracking-wide">
+      <span class="text-glow">José Angel</span>
     </h1>
-  </main>
+
+    <!-- Subtitle -->
+    <p class="text-xl md:text-2xl font-display font-light text-text-secondary mb-8">
+      Creative Developer & Digital Artist
+    </p>
+
+    <!-- Evocative tagline -->
+    <p class="max-w-md text-text-muted font-body leading-relaxed">
+      Luminescent tendrils cascade through the fathomless dark,
+      tracing paths the ancient currents carved.
+    </p>
+
+    <!-- Subtle hint -->
+    <p class="mt-16 text-sm text-text-muted animate-pulse">
+      Click the constellation in the corner to navigate
+    </p>
+  </div>
 </Layout>
+
+<style>
+  .text-glow {
+    text-shadow:
+      0 0 10px var(--color-bloom),
+      0 0 20px var(--color-aurora),
+      0 0 40px var(--color-nebula);
+  }
+</style>

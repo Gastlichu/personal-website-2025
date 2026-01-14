@@ -1,0 +1,40 @@
+---
+/**
+ * Link - Styled anchor element
+ *
+ * @example
+ * <Link href="/about">About page</Link>
+ * <Link href="/blog" variant="subtle">Blog</Link>
+ * <Link href="https://github.com" external>GitHub</Link>
+ */
+
+interface Props {
+  href: string;
+  variant?: 'default' | 'subtle';
+  external?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  variant = 'default',
+  external = false,
+  class: className = '',
+} = Astro.props;
+
+const classes = [
+  'link',
+  variant === 'subtle' && 'link-subtle',
+  className,
+].filter(Boolean).join(' ');
+
+const externalProps = external ? {
+  target: '_blank',
+  rel: 'noopener noreferrer',
+} : {};
+---
+
+<a href={href} class={classes} {...externalProps}>
+  <slot />
+  {external && <span class="text-xs ml-1" aria-hidden="true">↗</span>}
+</a>

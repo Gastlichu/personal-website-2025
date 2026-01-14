@@ -1,0 +1,190 @@
+---
+/**
+ * ParticleField - Floating luminescent particles with cursor interaction
+ * Part of the Cosmic Ocean interactive background system
+ */
+---
+
+<canvas id="particle-field" class="fixed inset-0 pointer-events-none z-0" aria-hidden="true" transition:persist="particles"></canvas>
+
+<script is:inline>
+  // Prevent re-initialization if already running
+  if (!window.__particleFieldInitialized) {
+    window.__particleFieldInitialized = true;
+
+    const canvas = document.getElementById('particle-field');
+    const ctx = canvas.getContext('2d');
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Particle colors from design system
+    const colors = {
+      ember: { r: 212, g: 165, b: 116 },
+      spark: { r: 240, g: 208, b: 144 },
+      flare: { r: 255, g: 244, b: 224 },
+      stardust: { r: 248, g: 176, b: 216 },
+      bloom: { r: 208, g: 120, b: 200 },
+    };
+
+    const colorKeys = Object.keys(colors);
+
+    let particles = [];
+    let mouseX = -1000;
+    let mouseY = -1000;
+    let isMouseActive = false;
+    let mouseDecayTimer = 0;
+    const MOUSE_DECAY_TIME = 2000;
+    const INTERACTION_RADIUS = 180;
+
+    function getParticleCount() {
+      if (prefersReducedMotion) return 20;
+      const isMobile = window.innerWidth < 768;
+      return isMobile ? 40 : 80;
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function createParticle() {
+      const colorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+      const crossTime = 60 + Math.random() * 60;
+      const baseSpeed = canvas.width / (crossTime * 60);
+
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: 1 + Math.random() * 3,
+        color: colorKey,
+        baseSpeed,
+        angle: Math.random() * Math.PI * 2,
+        opacity: 0.3 + Math.random() * 0.7,
+        twinkleSpeed: 0.5 + Math.random() * 1.5,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        vx: 0,
+        vy: 0,
+      };
+    }
+
+    function initParticles() {
+      particles = [];
+      const count = getParticleCount();
+      for (let i = 0; i < count; i++) {
+        particles.push(createParticle());
+      }
+    }
+
+    function drawParticle(p, time) {
+      const color = colors[p.color];
+      const twinkle = Math.sin(time * 0.001 * p.twinkleSpeed + p.twinkleOffset);
+      const currentOpacity = p.opacity * (0.5 + twinkle * 0.5);
+      const currentSize = p.size * (0.8 + twinkle * 0.2);
+
+      const glowLayers = [
+        { radius: currentSize * 4, alpha: currentOpacity * 0.1 },
+        { radius: currentSize * 2.5, alpha: currentOpacity * 0.2 },
+        { radius: currentSize * 1.5, alpha: currentOpacity * 0.4 },
+        { radius: currentSize, alpha: currentOpacity },
+      ];
+
+      for (const layer of glowLayers) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, layer.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${layer.alpha})`;
+        ctx.fill();
+      }
+    }
+
+    function updateParticle(p, deltaTime) {
+      if (prefersReducedMotion) return;
+
+      const dt = deltaTime / 16.67;
+      const driftX = Math.cos(p.angle) * p.baseSpeed * dt;
+      const driftY = Math.sin(p.angle) * p.baseSpeed * dt;
+
+      if (isMouseActive) {
+        const dx = p.x - mouseX;
+        const dy = p.y - mouseY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < INTERACTION_RADIUS && distance > 0) {
+          const force = (1 - distance / INTERACTION_RADIUS) * 0.5;
+          const normalX = dx / distance;
+          const normalY = dy / distance;
+          p.vx += normalX * force * dt;
+          p.vy += normalY * force * dt;
+        }
+      }
+
+      p.x += driftX + p.vx;
+      p.y += driftY + p.vy;
+      p.vx *= 0.98;
+      p.vy *= 0.98;
+      p.angle += (Math.random() - 0.5) * 0.01 * dt;
+
+      if (p.x < -20) p.x = canvas.width + 20;
+      if (p.x > canvas.width + 20) p.x = -20;
+      if (p.y < -20) p.y = canvas.height + 20;
+      if (p.y > canvas.height + 20) p.y = -20;
+    }
+
+    let lastTime = 0;
+
+    function animate(time) {
+      const deltaTime = lastTime ? time - lastTime : 16.67;
+      lastTime = time;
+
+      if (isMouseActive && mouseDecayTimer > 0) {
+        mouseDecayTimer -= deltaTime;
+        if (mouseDecayTimer <= 0) {
+          isMouseActive = false;
+        }
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const particle of particles) {
+        updateParticle(particle, deltaTime);
+        drawParticle(particle, time);
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function handleMouseMove(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      isMouseActive = true;
+      mouseDecayTimer = MOUSE_DECAY_TIME;
+    }
+
+    function handleTouchMove(e) {
+      if (e.touches.length > 0) {
+        mouseX = e.touches[0].clientX;
+        mouseY = e.touches[0].clientY;
+        isMouseActive = true;
+        mouseDecayTimer = MOUSE_DECAY_TIME;
+      }
+    }
+
+    function handleMouseLeave() {
+      mouseDecayTimer = MOUSE_DECAY_TIME;
+    }
+
+    resizeCanvas();
+    initParticles();
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initParticles();
+    });
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    document.addEventListener('mouseleave', handleMouseLeave);
+
+    requestAnimationFrame(animate);
+  }
+</script>

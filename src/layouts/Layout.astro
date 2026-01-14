@@ -1,11 +1,28 @@
 ---
+import { ViewTransitions } from 'astro:transitions'
 import '../styles/global.css'
+import ParticleField from '../components/ParticleField.astro'
+import ConstellationNav from '../components/ConstellationNav.astro'
+
+export type RoomVibe = 'home' | 'blog' | 'gallery' | 'about' | 'styleguide';
 
 interface Props {
   title: string;
+  room?: RoomVibe;
 }
 
-const { title } = Astro.props;
+const { title, room = 'home' } = Astro.props;
+
+// Room-specific color configurations
+const roomColors: Record<RoomVibe, { blob1: string; blob2: string; blob3: string }> = {
+  home: { blob1: 'bg-nebula', blob2: 'bg-orchid', blob3: 'bg-abyss' },
+  blog: { blob1: 'bg-abyss', blob2: 'bg-nebula', blob3: 'bg-orchid' },      // Deeper, more purple
+  gallery: { blob1: 'bg-nebula', blob2: 'bg-coral', blob3: 'bg-abyss' },    // Warmer coral accent
+  about: { blob1: 'bg-abyss', blob2: 'bg-bloom', blob3: 'bg-nebula' },      // Soft glow
+  styleguide: { blob1: 'bg-wisteria', blob2: 'bg-orchid', blob3: 'bg-nebula' }, // Bright, reference
+};
+
+const colors = roomColors[room];
 ---
 
 <!DOCTYPE html>
@@ -21,8 +38,100 @@ const { title } = Astro.props;
       rel="stylesheet"
     />
     <title>{title}</title>
+    <ViewTransitions />
   </head>
-  <body class="bg-deep text-text-primary min-h-screen font-body">
-    <slot />
+  <body class="bg-void text-text-primary min-h-screen font-body overflow-x-hidden">
+    <!-- Breathing Background (Layer 1) -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true" transition:persist="bg">
+      <div class:list={["breathing-blob blob-1 absolute w-[600px] h-[600px] rounded-full opacity-45 blur-[100px] transition-colors duration-1000", colors.blob1]}></div>
+      <div class:list={["breathing-blob blob-2 absolute w-[500px] h-[500px] rounded-full opacity-40 blur-[80px] transition-colors duration-1000", colors.blob2]}></div>
+      <div class:list={["breathing-blob blob-3 absolute w-[700px] h-[700px] rounded-full opacity-50 blur-[90px] transition-colors duration-1000", colors.blob3]}></div>
+    </div>
+
+    <!-- Particle Field (Layer 2 + Reactive Layer 3) -->
+    <ParticleField />
+
+    <!-- Navigation -->
+    <ConstellationNav />
+
+    <!-- Content -->
+    <main class="relative z-10" transition:animate="fade">
+      <slot />
+    </main>
   </body>
 </html>
+
+<style>
+  .breathing-blob {
+    will-change: transform;
+  }
+
+  .blob-1 {
+    top: -10%;
+    left: -5%;
+    animation: drift-1 25s ease-in-out infinite;
+  }
+
+  .blob-2 {
+    top: 40%;
+    right: -10%;
+    animation: drift-2 30s ease-in-out infinite;
+  }
+
+  .blob-3 {
+    bottom: -20%;
+    left: 30%;
+    animation: drift-3 22s ease-in-out infinite;
+  }
+
+  @keyframes drift-1 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    25% {
+      transform: translate(10%, 15%) scale(1.05);
+    }
+    50% {
+      transform: translate(5%, 25%) scale(0.95);
+    }
+    75% {
+      transform: translate(-5%, 10%) scale(1.02);
+    }
+  }
+
+  @keyframes drift-2 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(-15%, -10%) scale(1.08);
+    }
+    66% {
+      transform: translate(-10%, 15%) scale(0.92);
+    }
+  }
+
+  @keyframes drift-3 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    20% {
+      transform: translate(15%, -10%) scale(1.03);
+    }
+    40% {
+      transform: translate(25%, 5%) scale(0.97);
+    }
+    60% {
+      transform: translate(10%, 15%) scale(1.05);
+    }
+    80% {
+      transform: translate(-5%, 5%) scale(0.98);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .breathing-blob {
+      animation: none;
+    }
+  }
+</style>

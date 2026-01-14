@@ -1,0 +1,393 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
+import Link from '../components/ui/Link.astro';
+import GlowText from '../components/ui/GlowText.astro';
+import Input from '../components/ui/Input.astro';
+import Badge from '../components/ui/Badge.astro';
+
+// Color palette for display
+const colors = {
+  backgrounds: [
+    { name: 'Void', var: 'void', hex: '#0a0a14' },
+    { name: 'Deep', var: 'deep', hex: '#181828' },
+    { name: 'Abyss', var: 'abyss', hex: '#201048' },
+    { name: 'Surface', var: 'surface', hex: '#302038' },
+  ],
+  primary: [
+    { name: 'Nebula', var: 'nebula', hex: '#582870' },
+    { name: 'Orchid', var: 'orchid', hex: '#9048a0' },
+    { name: 'Wisteria', var: 'wisteria', hex: '#9058b8' },
+  ],
+  accents: [
+    { name: 'Coral', var: 'coral', hex: '#a86878' },
+    { name: 'Rose', var: 'rose', hex: '#d068a8' },
+    { name: 'Blush', var: 'blush', hex: '#c88890' },
+  ],
+  glow: [
+    { name: 'Bloom', var: 'bloom', hex: '#d078c8' },
+    { name: 'Aurora', var: 'aurora', hex: '#b070d0' },
+    { name: 'Stardust', var: 'stardust', hex: '#f8b0d8' },
+    { name: 'Warmglow', var: 'warmglow', hex: '#f0c8c0' },
+    { name: 'Pearl', var: 'pearl', hex: '#e8b8b8' },
+  ],
+  particles: [
+    { name: 'Ember', var: 'ember', hex: '#d4a574' },
+    { name: 'Spark', var: 'spark', hex: '#f0d090' },
+    { name: 'Flare', var: 'flare', hex: '#fff4e0' },
+  ],
+};
+---
+
+<Layout title="Style Guide | Cosmic Ocean" room="styleguide">
+  <div class="min-h-screen px-6 py-24">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <header class="mb-16 text-center">
+        <h1 class="text-display text-text-primary mb-4">
+          <GlowText>Style Guide</GlowText>
+        </h1>
+        <p class="text-body text-text-secondary">
+          Cosmic Ocean design system components and utilities
+        </p>
+      </header>
+
+      <!-- Color Palette -->
+      <section class="mb-16">
+        <h2 class="text-h1 text-text-primary mb-8">Color Palette</h2>
+
+        <div class="space-y-8">
+          <!-- Backgrounds -->
+          <div>
+            <h3 class="text-h3 text-text-secondary mb-4">Backgrounds</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {colors.backgrounds.map((color) => (
+                <div class="text-center">
+                  <div
+                    class={`h-20 rounded-lg border border-orchid/20 bg-${color.var}`}
+                    style={`background-color: ${color.hex}`}
+                  ></div>
+                  <p class="text-small text-text-primary mt-2">{color.name}</p>
+                  <p class="text-micro text-text-muted font-mono">{color.hex}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Primary -->
+          <div>
+            <h3 class="text-h3 text-text-secondary mb-4">Primary</h3>
+            <div class="grid grid-cols-3 gap-4">
+              {colors.primary.map((color) => (
+                <div class="text-center">
+                  <div
+                    class="h-20 rounded-lg"
+                    style={`background-color: ${color.hex}`}
+                  ></div>
+                  <p class="text-small text-text-primary mt-2">{color.name}</p>
+                  <p class="text-micro text-text-muted font-mono">{color.hex}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Accents -->
+          <div>
+            <h3 class="text-h3 text-text-secondary mb-4">Accents</h3>
+            <div class="grid grid-cols-3 gap-4">
+              {colors.accents.map((color) => (
+                <div class="text-center">
+                  <div
+                    class="h-20 rounded-lg"
+                    style={`background-color: ${color.hex}`}
+                  ></div>
+                  <p class="text-small text-text-primary mt-2">{color.name}</p>
+                  <p class="text-micro text-text-muted font-mono">{color.hex}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Glow -->
+          <div>
+            <h3 class="text-h3 text-text-secondary mb-4">Glow</h3>
+            <div class="grid grid-cols-5 gap-4">
+              {colors.glow.map((color) => (
+                <div class="text-center">
+                  <div
+                    class="h-16 rounded-lg"
+                    style={`background-color: ${color.hex}`}
+                  ></div>
+                  <p class="text-small text-text-primary mt-2">{color.name}</p>
+                  <p class="text-micro text-text-muted font-mono">{color.hex}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Particles -->
+          <div>
+            <h3 class="text-h3 text-text-secondary mb-4">Particles</h3>
+            <div class="grid grid-cols-3 gap-4">
+              {colors.particles.map((color) => (
+                <div class="text-center">
+                  <div
+                    class="h-16 rounded-lg"
+                    style={`background-color: ${color.hex}`}
+                  ></div>
+                  <p class="text-small text-text-primary mt-2">{color.name}</p>
+                  <p class="text-micro text-text-muted font-mono">{color.hex}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Typography -->
+      <section class="mb-16">
+        <h2 class="text-h1 text-text-primary mb-8">Typography</h2>
+
+        <Card class="p-6 space-y-6">
+          <div>
+            <p class="text-micro text-text-muted mb-1">.text-display — 48px / 300</p>
+            <p class="text-display text-text-primary">Display Heading</p>
+          </div>
+          <div>
+            <p class="text-micro text-text-muted mb-1">.text-h1 — 36px / 400</p>
+            <p class="text-h1 text-text-primary">Heading One</p>
+          </div>
+          <div>
+            <p class="text-micro text-text-muted mb-1">.text-h2 — 28px / 400</p>
+            <p class="text-h2 text-text-primary">Heading Two</p>
+          </div>
+          <div>
+            <p class="text-micro text-text-muted mb-1">.text-h3 — 20px / 500</p>
+            <p class="text-h3 text-text-primary">Heading Three</p>
+          </div>
+          <div>
+            <p class="text-micro text-text-muted mb-1">.text-body — 16px / 400</p>
+            <p class="text-body text-text-primary">Body text for paragraphs and general content. The nebulae exhale slowly here, their breath becoming dust on abandoned telescopes.</p>
+          </div>
+          <div>
+            <p class="text-micro text-text-muted mb-1">.text-small — 14px / 400</p>
+            <p class="text-small text-text-secondary">Small text for captions and secondary information.</p>
+          </div>
+          <div>
+            <p class="text-micro text-text-muted mb-1">.text-micro — 12px / 400</p>
+            <p class="text-micro text-text-muted">Micro text for labels and metadata.</p>
+          </div>
+        </Card>
+      </section>
+
+      <!-- Glow Text -->
+      <section class="mb-16">
+        <h2 class="text-h1 text-text-primary mb-8">Glow Effects</h2>
+
+        <Card class="p-6">
+          <div class="grid grid-cols-2 gap-8">
+            <div class="text-center">
+              <p class="text-micro text-text-muted mb-2">.glow (default)</p>
+              <p class="text-h2 glow text-text-primary">Luminescent</p>
+            </div>
+            <div class="text-center">
+              <p class="text-micro text-text-muted mb-2">.glow-subtle</p>
+              <p class="text-h2 glow-subtle text-text-primary">Subtle Glow</p>
+            </div>
+            <div class="text-center">
+              <p class="text-micro text-text-muted mb-2">.glow-warm</p>
+              <p class="text-h2 glow-warm text-text-primary">Warm Coral</p>
+            </div>
+            <div class="text-center">
+              <p class="text-micro text-text-muted mb-2">.glow-soft</p>
+              <p class="text-h2 glow-soft text-text-primary">Soft Bloom</p>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      <!-- Buttons -->
+      <section class="mb-16">
+        <h2 class="text-h1 text-text-primary mb-8">Buttons</h2>
+
+        <Card class="p-6 space-y-8">
+          <!-- Variants -->
+          <div>
+            <p class="text-small text-text-muted mb-4">Variants</p>
+            <div class="flex flex-wrap gap-4">
+              <Button variant="primary">Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="ghost">Ghost</Button>
+            </div>
+          </div>
+
+          <!-- Sizes -->
+          <div>
+            <p class="text-small text-text-muted mb-4">Sizes</p>
+            <div class="flex flex-wrap items-center gap-4">
+              <Button size="sm">Small</Button>
+              <Button size="md">Medium</Button>
+              <Button size="lg">Large</Button>
+            </div>
+          </div>
+
+          <!-- States -->
+          <div>
+            <p class="text-small text-text-muted mb-4">States</p>
+            <div class="flex flex-wrap gap-4">
+              <Button>Default</Button>
+              <Button disabled>Disabled</Button>
+              <Button href="#">Link Button</Button>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      <!-- Cards -->
+      <section class="mb-16">
+        <h2 class="text-h1 text-text-primary mb-8">Cards</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-small text-text-muted mb-4">Static Card</p>
+            <Card class="p-6">
+              <h3 class="text-h3 text-text-primary mb-2">Card Title</h3>
+              <p class="text-body text-text-secondary">
+                Vespertine hollows drift through the waning gargoyles, where chimeric whispers collect.
+              </p>
+            </Card>
+          </div>
+
+          <div>
+            <p class="text-small text-text-muted mb-4">Interactive Card</p>
+            <Card interactive class="p-6 cursor-pointer">
+              <h3 class="text-h3 text-text-primary mb-2">Hover Me</h3>
+              <p class="text-body text-text-secondary">
+                This card lifts and glows on hover, perfect for clickable items.
+              </p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <!-- Links -->
+      <section class="mb-16">
+        <h2 class="text-h1 text-text-primary mb-8">Links</h2>
+
+        <Card class="p-6 space-y-4">
+          <div>
+            <p class="text-small text-text-muted mb-2">Default Link</p>
+            <p class="text-body text-text-secondary">
+              Here is some text with a <Link href="#">default link</Link> inside it.
+            </p>
+          </div>
+          <div>
+            <p class="text-small text-text-muted mb-2">Subtle Link</p>
+            <p class="text-body text-text-secondary">
+              A <Link href="#" variant="subtle">subtle link</Link> blends more with surrounding text.
+            </p>
+          </div>
+          <div>
+            <p class="text-small text-text-muted mb-2">External Link</p>
+            <p class="text-body text-text-secondary">
+              Visit <Link href="https://github.com" external>GitHub</Link> for the source code.
+            </p>
+          </div>
+        </Card>
+      </section>
+
+      <!-- Inputs -->
+      <section class="mb-16">
+        <h2 class="text-h1 text-text-primary mb-8">Form Inputs</h2>
+
+        <Card class="p-6 space-y-6">
+          <div>
+            <label class="text-small text-text-secondary block mb-2">Text Input</label>
+            <Input name="demo-text" placeholder="Enter your name..." />
+          </div>
+          <div>
+            <label class="text-small text-text-secondary block mb-2">Email Input</label>
+            <Input name="demo-email" type="email" placeholder="you@example.com" />
+          </div>
+          <div>
+            <label class="text-small text-text-secondary block mb-2">Error State</label>
+            <Input name="demo-error" placeholder="Something went wrong" error />
+          </div>
+          <div>
+            <label class="text-small text-text-secondary block mb-2">Textarea</label>
+            <Input name="demo-textarea" multiline rows={4} placeholder="Tell us your story..." />
+          </div>
+        </Card>
+      </section>
+
+      <!-- Badges -->
+      <section class="mb-16">
+        <h2 class="text-h1 text-text-primary mb-8">Badges</h2>
+
+        <Card class="p-6">
+          <div class="flex flex-wrap gap-4">
+            <Badge>Default</Badge>
+            <Badge variant="outline">Outline</Badge>
+            <Badge variant="warm">Warm</Badge>
+          </div>
+        </Card>
+      </section>
+
+      <!-- Utility Classes Reference -->
+      <section class="mb-16">
+        <h2 class="text-h1 text-text-primary mb-8">Utility Classes</h2>
+
+        <Card class="p-6 overflow-x-auto">
+          <table class="w-full text-small">
+            <thead>
+              <tr class="text-left border-b border-orchid/20">
+                <th class="pb-3 text-text-secondary font-medium">Class</th>
+                <th class="pb-3 text-text-secondary font-medium">Description</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-primary">
+              <tr class="border-b border-orchid/10">
+                <td class="py-3 font-mono text-rose">.btn .btn-{'{variant}'}</td>
+                <td class="py-3 text-text-secondary">Button styles: primary, secondary, ghost</td>
+              </tr>
+              <tr class="border-b border-orchid/10">
+                <td class="py-3 font-mono text-rose">.btn-{'{size}'}</td>
+                <td class="py-3 text-text-secondary">Button sizes: sm, lg</td>
+              </tr>
+              <tr class="border-b border-orchid/10">
+                <td class="py-3 font-mono text-rose">.card .card-interactive</td>
+                <td class="py-3 text-text-secondary">Card container with optional hover effect</td>
+              </tr>
+              <tr class="border-b border-orchid/10">
+                <td class="py-3 font-mono text-rose">.link .link-subtle</td>
+                <td class="py-3 text-text-secondary">Styled anchor elements</td>
+              </tr>
+              <tr class="border-b border-orchid/10">
+                <td class="py-3 font-mono text-rose">.glow .glow-{'{variant}'}</td>
+                <td class="py-3 text-text-secondary">Text glow: subtle, warm, soft</td>
+              </tr>
+              <tr class="border-b border-orchid/10">
+                <td class="py-3 font-mono text-rose">.input .input-error</td>
+                <td class="py-3 text-text-secondary">Form input styles</td>
+              </tr>
+              <tr class="border-b border-orchid/10">
+                <td class="py-3 font-mono text-rose">.badge .badge-{'{variant}'}</td>
+                <td class="py-3 text-text-secondary">Badge styles: outline, warm</td>
+              </tr>
+              <tr>
+                <td class="py-3 font-mono text-rose">.text-{'{scale}'}</td>
+                <td class="py-3 text-text-secondary">Typography: display, h1, h2, h3, body, small, micro</td>
+              </tr>
+            </tbody>
+          </table>
+        </Card>
+      </section>
+
+      <!-- Footer -->
+      <footer class="text-center text-text-muted text-small">
+        <p>Cosmic Ocean Design System v0.1</p>
+      </footer>
+    </div>
+  </div>
+</Layout>

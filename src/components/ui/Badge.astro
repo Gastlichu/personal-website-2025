@@ -1,0 +1,30 @@
+---
+/**
+ * Badge - Small label or tag
+ *
+ * @example
+ * <Badge>New</Badge>
+ * <Badge variant="outline">Draft</Badge>
+ * <Badge variant="warm">Featured</Badge>
+ */
+
+interface Props {
+  variant?: 'default' | 'outline' | 'warm';
+  class?: string;
+}
+
+const {
+  variant = 'default',
+  class: className = '',
+} = Astro.props;
+
+const classes = [
+  'badge',
+  variant !== 'default' && `badge-${variant}`,
+  className,
+].filter(Boolean).join(' ');
+---
+
+<span class={classes}>
+  <slot />
+</span>

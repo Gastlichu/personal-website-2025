@@ -1,0 +1,95 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Badge from '../../components/ui/Badge.astro';
+
+// Get all gallery items, sorted by date (newest first)
+const artworks = (await getCollection('gallery'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Separate featured and regular items
+const featured = artworks.filter(a => a.data.featured);
+const regular = artworks.filter(a => !a.data.featured);
+---
+
+<Layout title="Gallery | Cosmic Ocean" room="gallery">
+  <div class="min-h-screen px-6 py-24">
+    <div class="max-w-5xl mx-auto">
+      <!-- Room Title -->
+      <header class="mb-16 text-center">
+        <h1 class="text-4xl md:text-5xl font-display font-light text-text-primary mb-4">
+          <span class="glow-warm">Gallery</span>
+        </h1>
+        <p class="text-text-secondary font-body">
+          Visual explorations of the liminal space
+        </p>
+      </header>
+
+      <!-- Featured Works -->
+      {featured.length > 0 && (
+        <section class="mb-16">
+          <h2 class="text-h3 text-text-secondary mb-6">Featured</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {featured.map((art) => (
+              <a href={`/gallery/${art.slug}`} class="block group">
+                <article class="gallery-card relative rounded-lg bg-surface/50 border border-coral/30 overflow-hidden transition-all duration-300 hover:border-coral/60 hover:shadow-[0_0_30px_rgba(168,104,120,0.2)]">
+                  <div class="aspect-[4/3] bg-gradient-to-br from-abyss/50 to-nebula/30 flex items-center justify-center">
+                    <span class="text-7xl text-coral/40 font-display font-light select-none group-hover:scale-110 transition-transform">✦</span>
+                  </div>
+                  <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-void/95 via-void/70 to-transparent">
+                    <Badge variant="warm" class="mb-2">Featured</Badge>
+                    <h3 class="font-display text-lg text-text-primary group-hover:text-coral transition-colors">
+                      {art.data.title}
+                    </h3>
+                    <p class="text-sm text-text-muted mt-1">
+                      {art.data.date.getFullYear()} · {art.data.medium}
+                    </p>
+                  </div>
+                </article>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- All Works -->
+      <section>
+        {featured.length > 0 && (
+          <h2 class="text-h3 text-text-secondary mb-6">All Works</h2>
+        )}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {regular.map((art) => (
+            <a href={`/gallery/${art.slug}`} class="block group">
+              <article class="gallery-card relative rounded-lg bg-surface/50 border border-coral/20 overflow-hidden transition-all duration-300 hover:border-coral/50">
+                <div class="aspect-[4/5] bg-gradient-to-br from-abyss/50 to-nebula/30 flex items-center justify-center">
+                  <span class="text-6xl text-coral/30 font-display font-light select-none group-hover:scale-110 transition-transform">✦</span>
+                </div>
+                <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-void/90 via-void/60 to-transparent">
+                  <h3 class="font-display text-text-primary group-hover:text-coral transition-colors">
+                    {art.data.title}
+                  </h3>
+                  <p class="text-sm text-text-muted mt-1">
+                    {art.data.date.getFullYear()} · {art.data.medium}
+                  </p>
+                </div>
+                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-br from-coral/5 to-warmglow/5"></div>
+              </article>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {artworks.length === 0 && (
+        <p class="text-center text-text-muted">
+          The gallery awaits its first piece.
+        </p>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .gallery-card {
+    contain: layout;
+  }
+</style>

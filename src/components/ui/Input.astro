@@ -1,0 +1,63 @@
+---
+/**
+ * Input - Form text input
+ *
+ * @example
+ * <Input name="email" placeholder="Enter email" />
+ * <Input name="search" type="search" />
+ * <Input name="bio" multiline rows={4} />
+ */
+
+interface Props {
+  name: string;
+  type?: 'text' | 'email' | 'password' | 'search' | 'url' | 'tel';
+  placeholder?: string;
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+  error?: boolean;
+  multiline?: boolean;
+  rows?: number;
+  class?: string;
+}
+
+const {
+  name,
+  type = 'text',
+  placeholder,
+  value,
+  required = false,
+  disabled = false,
+  error = false,
+  multiline = false,
+  rows = 3,
+  class: className = '',
+} = Astro.props;
+
+const classes = [
+  'input',
+  error && 'input-error',
+  className,
+].filter(Boolean).join(' ');
+---
+
+{multiline ? (
+  <textarea
+    name={name}
+    placeholder={placeholder}
+    required={required}
+    disabled={disabled}
+    rows={rows}
+    class={classes}
+  >{value}</textarea>
+) : (
+  <input
+    type={type}
+    name={name}
+    placeholder={placeholder}
+    value={value}
+    required={required}
+    disabled={disabled}
+    class={classes}
+  />
+)}

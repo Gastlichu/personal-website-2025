@@ -1,0 +1,49 @@
+---
+/**
+ * Button - Primary interactive element
+ *
+ * @example
+ * <Button>Click me</Button>
+ * <Button variant="secondary">Secondary</Button>
+ * <Button variant="ghost" size="sm">Small Ghost</Button>
+ * <Button href="/about">Link Button</Button>
+ */
+
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  disabled = false,
+  class: className = '',
+} = Astro.props;
+
+const classes = [
+  'btn',
+  `btn-${variant}`,
+  size !== 'md' && `btn-${size}`,
+  disabled && 'opacity-50 cursor-not-allowed',
+  className,
+].filter(Boolean).join(' ');
+
+const Element = href ? 'a' : 'button';
+---
+
+{href ? (
+  <a href={href} class={classes}>
+    <slot />
+  </a>
+) : (
+  <button type={type} disabled={disabled} class={classes}>
+    <slot />
+  </button>
+)}

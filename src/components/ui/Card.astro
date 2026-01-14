@@ -1,0 +1,30 @@
+---
+/**
+ * Card - Elevated surface container
+ *
+ * @example
+ * <Card>Static content</Card>
+ * <Card interactive>Hoverable card</Card>
+ * <Card class="p-6">With custom padding</Card>
+ */
+
+interface Props {
+  interactive?: boolean;
+  class?: string;
+}
+
+const {
+  interactive = false,
+  class: className = '',
+} = Astro.props;
+
+const classes = [
+  'card',
+  interactive && 'card-interactive',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<div class={classes}>
+  <slot />
+</div>
