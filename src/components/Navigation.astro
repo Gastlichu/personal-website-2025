@@ -100,6 +100,23 @@
         </a>
       </li>
     </ul>
+    <!-- Theme Toggle -->
+    <div class="border-t border-orchid/20 px-5 py-3">
+      <button id="theme-toggle-kebab" class="theme-toggle flex items-center gap-3 w-full text-text-secondary hover:text-text-primary transition-colors font-body text-left">
+        <span class="theme-icon-container w-5 h-5 flex items-center justify-center">
+          <!-- Sun icon (current: cosmic, click for twilight) -->
+          <svg class="theme-icon-sun w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="5" />
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <!-- Moon icon (current: twilight, click for cosmic) -->
+          <svg class="theme-icon-moon w-4 h-4 hidden" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+          </svg>
+        </span>
+        <span class="theme-label">Twilight Mode</span>
+      </button>
+    </div>
   </div>
 </nav>
 
@@ -242,9 +259,34 @@
     </a>
   </div>
 
+  <!-- Sun/Eclipse Theme Toggle (top-left corner) -->
+  <button
+    id="theme-toggle-constellation"
+    class="theme-toggle absolute top-6 left-6 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 group z-10"
+    aria-label="Toggle theme"
+  >
+    <!-- Eclipse Sun (cosmic/dark mode - sun is "off") -->
+    <div class="eclipse-sun absolute inset-0 flex items-center justify-center transition-all duration-500">
+      <!-- Outer corona ring -->
+      <span class="absolute w-14 h-14 rounded-full border-2 border-spark/60 opacity-80"></span>
+      <!-- Inner dark circle (moon covering sun) -->
+      <span class="absolute w-8 h-8 rounded-full bg-void border border-spark/30"></span>
+    </div>
+    <!-- Pulsating Sun (twilight/light mode - sun is "on") -->
+    <div class="pulsating-sun absolute inset-0 flex items-center justify-center transition-all duration-500 opacity-0 scale-75">
+      <!-- Sun core -->
+      <span class="sun-core absolute w-8 h-8 rounded-full bg-gradient-to-br from-spark via-ember to-coral"></span>
+      <!-- Sun glow -->
+      <span class="sun-glow absolute w-12 h-12 rounded-full bg-spark/30 blur-sm"></span>
+      <!-- Sun rays (animated) -->
+      <span class="sun-rays absolute w-14 h-14 rounded-full border-2 border-spark/50 animate-sun-pulse"></span>
+    </div>
+  </button>
+
   <!-- Close hint -->
   <p class="absolute bottom-8 left-1/2 -translate-x-1/2 text-text-muted text-sm font-body">
-    Click a star or press <kbd class="px-2 py-0.5 rounded bg-surface/50 text-text-secondary text-xs">Esc</kbd> to close
+    <span class="hidden sm:inline">Click a star or press <kbd class="px-2 py-0.5 rounded bg-surface/50 text-text-secondary text-xs">Esc</kbd> to close</span>
+    <span class="sm:hidden">Tap a star or tap outside to close</span>
   </p>
 </nav>
 
@@ -396,9 +438,231 @@
       animation: none !important;
     }
   }
+
+  /* ============================================
+     TWILIGHT THEME OVERRIDES
+     Soft dawn/dusk, muted cosmic aesthetic
+     ============================================ */
+
+  /* Twilight backdrop - soft lavender instead of void */
+  [data-theme="twilight"] .nav-backdrop {
+    background: rgba(232, 228, 240, 0.95);
+  }
+
+  /* Twilight background stars - soft pastel sparkles */
+  [data-theme="twilight"] .bg-star {
+    background: var(--color-stardust);
+  }
+
+  /* Twilight constellation lines - muted purple gradient */
+  [data-theme="twilight"] #line-gradient stop:first-child {
+    stop-color: #a890b8;
+  }
+  [data-theme="twilight"] #line-gradient stop:last-child {
+    stop-color: #c8a0b8;
+  }
+
+  /* Twilight star cores and glows - soft pastels */
+  [data-theme="twilight"] .star-core {
+    background: var(--color-stardust) !important;
+  }
+
+  [data-theme="twilight"] .star-glow {
+    background: rgba(208, 184, 216, 0.4) !important;
+  }
+
+  [data-theme="twilight"] .star-link:hover .star-core {
+    background: var(--color-pearl) !important;
+    box-shadow: 0 0 15px rgba(208, 184, 216, 0.6) !important;
+  }
+
+  [data-theme="twilight"] .star-link.is-active .star-glow {
+    background: rgba(208, 184, 216, 0.5) !important;
+  }
+
+  [data-theme="twilight"] .star-link.is-active .star-core {
+    background: #f0e0e8 !important;
+    box-shadow: 0 0 20px rgba(208, 184, 216, 0.8), 0 0 40px rgba(168, 144, 184, 0.4) !important;
+  }
+
+  [data-theme="twilight"] .star-link.is-active .star-label {
+    color: var(--color-orchid) !important;
+  }
+
+  /* Twilight navigation buttons - soft styling */
+  [data-theme="twilight"] #nav-toggle,
+  [data-theme="twilight"] #nav-mode-toggle {
+    background: rgba(240, 236, 248, 0.9);
+    border-color: rgba(168, 144, 184, 0.3);
+  }
+
+  [data-theme="twilight"] #nav-toggle:hover,
+  [data-theme="twilight"] #nav-mode-toggle:hover {
+    border-color: rgba(168, 144, 184, 0.6);
+    box-shadow: 0 0 20px rgba(168, 144, 184, 0.3);
+  }
+
+  /* Twilight kebab menu - soft lavender */
+  [data-theme="twilight"] #kebab-nav > div {
+    background: rgba(240, 236, 248, 0.98);
+    border-color: rgba(168, 144, 184, 0.3);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  [data-theme="twilight"] .nav-item:hover {
+    background: rgba(168, 144, 184, 0.1);
+  }
+
+  [data-theme="twilight"] .nav-item.is-active {
+    color: var(--color-orchid);
+    background: rgba(168, 144, 184, 0.15);
+  }
+
+  /* ============================================
+     SUN/ECLIPSE THEME TOGGLE
+     ============================================ */
+
+  /* Sun pulse animation */
+  @keyframes sun-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.15);
+      opacity: 0.8;
+    }
+  }
+
+  .animate-sun-pulse {
+    animation: sun-pulse 2s ease-in-out infinite;
+  }
+
+  /* Eclipse state (cosmic/dark - default) */
+  .eclipse-sun {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .pulsating-sun {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+
+  /* Sun state (twilight/light) */
+  [data-theme="twilight"] .eclipse-sun {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+
+  [data-theme="twilight"] .pulsating-sun {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Hover effect */
+  #theme-toggle-constellation:hover .eclipse-sun span:first-child {
+    border-color: var(--color-spark);
+    box-shadow: 0 0 20px rgba(240, 208, 144, 0.4);
+  }
+
+  #theme-toggle-constellation:hover .pulsating-sun .sun-core {
+    box-shadow: 0 0 30px rgba(240, 208, 144, 0.6);
+  }
+
+  /* Twilight theme adjustments for sun toggle */
+  [data-theme="twilight"] #theme-toggle-constellation .eclipse-sun span:last-child {
+    background: var(--color-void);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-sun-pulse {
+      animation: none;
+    }
+    .eclipse-sun,
+    .pulsating-sun {
+      transition: opacity 0.1s, transform 0.1s;
+    }
+  }
 </style>
 
 <script is:inline>
+  // Theme management - runs on every page load/swap
+  (function initTheme() {
+    // Get current theme from localStorage (cosmic is default)
+    function getCurrentTheme() {
+      return localStorage.getItem('theme') === 'twilight' ? 'twilight' : 'cosmic';
+    }
+
+    // Apply theme to document
+    function applyTheme(theme) {
+      if (theme === 'twilight') {
+        document.documentElement.setAttribute('data-theme', 'twilight');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    }
+
+    // Update all theme toggle UI elements
+    function updateAllThemeUI() {
+      const theme = getCurrentTheme();
+
+      // Update kebab menu toggle icons
+      document.querySelectorAll('.theme-toggle').forEach(toggle => {
+        const sunIcon = toggle.querySelector('.theme-icon-sun');
+        const moonIcon = toggle.querySelector('.theme-icon-moon');
+        const label = toggle.querySelector('.theme-label');
+
+        if (sunIcon && moonIcon) {
+          if (theme === 'twilight') {
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+          } else {
+            sunIcon.classList.remove('hidden');
+            moonIcon.classList.add('hidden');
+          }
+        }
+
+        if (label) {
+          label.textContent = theme === 'twilight' ? 'Cosmic Mode' : 'Twilight Mode';
+        }
+      });
+    }
+
+    // Toggle theme function
+    function toggleTheme() {
+      const currentTheme = getCurrentTheme();
+      const newTheme = currentTheme === 'cosmic' ? 'twilight' : 'cosmic';
+      localStorage.setItem('theme', newTheme);
+      applyTheme(newTheme);
+      updateAllThemeUI();
+
+      // Dispatch event for other components (like particles)
+      window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
+    }
+
+    // Bind click handlers to all theme toggles
+    function bindThemeToggles() {
+      document.querySelectorAll('.theme-toggle').forEach(toggle => {
+        // Remove existing listener to prevent duplicates
+        toggle.removeEventListener('click', toggleTheme);
+        toggle.addEventListener('click', toggleTheme);
+      });
+    }
+
+    // Apply theme immediately (this also runs from Layout.astro head script)
+    applyTheme(getCurrentTheme());
+    updateAllThemeUI();
+    bindThemeToggles();
+
+    // Re-bind after View Transitions swap (DOM gets replaced)
+    document.addEventListener('astro:after-swap', () => {
+      applyTheme(getCurrentTheme());
+      updateAllThemeUI();
+      bindThemeToggles();
+    });
+  })();
+
   // Initialize navigation functionality
   function initNavigation() {
     const toggle = document.getElementById('nav-toggle');

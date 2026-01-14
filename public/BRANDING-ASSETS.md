@@ -1,8 +1,8 @@
 # Branding Assets
 
-This folder contains the source SVG files for the site's branding. PNG versions need to be generated for full browser/platform support.
+This folder contains the site's branding assets. PNG versions have been generated from the SVG sources.
 
-## Files to Generate
+## Generated Files
 
 ### From `favicon.svg`:
 - `favicon-16x16.png` — 16×16px
@@ -14,26 +14,15 @@ This folder contains the source SVG files for the site's branding. PNG versions 
 ### From `og-image.svg`:
 - `og-image.png` — 1200×630px (for social sharing)
 
-## How to Generate
+## How to Regenerate
 
-### Option 1: Online Tools
-- [RealFaviconGenerator](https://realfavicongenerator.net/) — Upload the SVG, generates all sizes
-- [Favicon.io](https://favicon.io/) — Simple favicon generator
+If you update the SVG sources, regenerate PNGs with:
 
-### Option 2: Command Line (using Inkscape or ImageMagick)
 ```bash
-# Using Inkscape
-inkscape favicon.svg -w 32 -h 32 -o favicon-32x32.png
-inkscape favicon.svg -w 180 -h 180 -o apple-touch-icon.png
-inkscape og-image.svg -w 1200 -h 630 -o og-image.png
-
-# Using ImageMagick (may need to install rsvg for SVG support)
-convert -background none -resize 32x32 favicon.svg favicon-32x32.png
+node scripts/generate-assets.mjs
 ```
 
-### Option 3: Figma/Design Tool
-1. Import the SVG files
-2. Export at the required sizes
+This uses Sharp (bundled with Astro) to convert SVGs to PNGs at all required sizes.
 
 ## Color Reference
 

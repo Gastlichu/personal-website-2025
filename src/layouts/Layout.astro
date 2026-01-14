@@ -53,7 +53,19 @@ const colors = roomColors[room];
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#0a0a14" />
+    <meta name="theme-color" content="#0a0a14" id="theme-color" />
+
+    <!-- Prevent flash of wrong theme -->
+    <script is:inline>
+      (function() {
+        // Default to cosmic (dark) - only use twilight if user explicitly chose it
+        const saved = localStorage.getItem('theme');
+        if (saved === 'twilight') {
+          document.documentElement.setAttribute('data-theme', 'twilight');
+          document.getElementById('theme-color')?.setAttribute('content', '#e8e4f0');
+        }
+      })();
+    </script>
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
@@ -76,6 +88,9 @@ const colors = roomColors[room];
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImageURL} />
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Cosmic Ocean Blog" href="/rss.xml" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

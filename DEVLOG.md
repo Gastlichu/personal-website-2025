@@ -586,6 +586,96 @@ Overhauled the navigation system with dual menu modes and added numerous perform
 
 ---
 
+## 2026-01-14 — Polish Session
+
+### Phase 15: Theme System, Bug Fixes & Quick Wins
+
+Major polish session adding dark/light mode, fixing navigation bugs, and completing previously deferred tasks.
+
+**What was built:**
+
+**Dark/Light Mode (Twilight Theme):**
+- Full theme system with CSS custom properties
+- **Cosmic (dark):** Original deep space aesthetic — default
+- **Twilight (light):** Softer, muted cosmic colors — dusty lavenders, soft purples, dreamy pastels
+- Theme toggle in kebab menu dropdown
+- **Sun/Eclipse toggle in constellation menu:**
+  - Cosmic mode: Eclipsed sun with glowing corona ring
+  - Twilight mode: Pulsating golden sun with animated rays
+  - Pure CSS state transitions (no JavaScript animation needed)
+- Theme persists via localStorage
+- Ignores OS preference — cosmic is intentional default, twilight is opt-in
+- Updated ParticleField with twilight-specific particle colors (lavender, dusty rose, pearl, mist, blush)
+
+**Bug Fixes:**
+- **Room colors not updating during navigation:** Blob colors weren't changing when traveling between rooms. Added JavaScript listener for `astro:after-swap` that updates blob classes based on current path.
+- **Theme resetting on navigation:** Theme would revert to cosmic when navigating. Script wasn't re-running after View Transitions replaced DOM. Fixed by listening for `astro:after-swap` and re-applying theme from localStorage.
+- **Mobile close hint:** Constellation menu said "press Esc" which doesn't work on mobile. Now shows "Tap a star or tap outside to close" on small screens using responsive Tailwind classes.
+
+**Quick Wins:**
+- **PNG Favicons:** Generated via Sharp script — 16x16, 32x32, 192x192, 512x512
+- **Apple Touch Icon:** 180x180
+- **Open Graph Image:** 1200x630 PNG for social sharing
+- **RSS Feed:** `/rss.xml` endpoint using `@astrojs/rss`
+- **Text Shadows for Readability:** Replaced heavy content containers with `.text-readable` class using layered text shadows. Maintains floating-in-space aesthetic while ensuring text is legible over breathing background.
+
+**404 Page:**
+- "Lost in the Void" themed error page
+- Floating 404 with subtle animation
+- Orbit ring with small star circling the number
+- "Return Home" and "Go Back" navigation options
+- Poetic message: *"Even stars sometimes wander from their constellations."*
+
+**Files created:**
+- `src/pages/404.astro` — Lost in space error page
+- `src/pages/rss.xml.ts` — RSS feed endpoint
+- `scripts/generate-assets.mjs` — Sharp script for PNG generation
+- `public/favicon-16x16.png`
+- `public/favicon-32x32.png`
+- `public/favicon-192x192.png`
+- `public/favicon-512x512.png`
+- `public/apple-touch-icon.png`
+- `public/og-image.png`
+
+**Files modified:**
+- `src/styles/global.css` — Added Twilight theme color palette, `.text-readable` class
+- `src/layouts/Layout.astro` — Flash prevention script, blob IDs for JavaScript manipulation
+- `src/components/Navigation.astro` — Theme toggle in menu, sun/eclipse toggle in constellation, twilight CSS overrides, mobile close hint
+- `src/components/ParticleField.astro` — Twilight particle colors, theme change listener
+- `public/site.webmanifest` — Updated with PNG icon references
+
+**Technical notes:**
+- Theme flash prevention uses inline script in `<head>` that runs before body renders
+- CSS-only theme switching via `[data-theme="twilight"]` selector
+- Sun/eclipse animation uses CSS transitions on `opacity` and `transform` — no JavaScript animation
+- RSS feed uses Astro's content collections API for type-safe blog queries
+- Text shadows use multiple layers with varying blur/opacity for depth
+
+**CSS Highlights:**
+```css
+/* Text readability over breathing background */
+.text-readable {
+  text-shadow:
+    0 0 20px rgba(10, 10, 20, 0.9),
+    0 0 40px rgba(10, 10, 20, 0.7),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Twilight theme override */
+[data-theme="twilight"] .text-readable {
+  text-shadow:
+    0 0 20px rgba(240, 236, 248, 0.9),
+    0 0 40px rgba(232, 228, 240, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Sun/Eclipse state transitions */
+[data-theme="twilight"] .eclipse-sun { opacity: 0; transform: scale(0.75); }
+[data-theme="twilight"] .pulsating-sun { opacity: 1; transform: scale(1); }
+```
+
+---
+
 ## Current Project State
 
 ### File Structure
@@ -705,13 +795,21 @@ src/
 - [x] Content container component for readable prose
 - [x] Real blog content (Building Cosmic Ocean collaboration report)
 - [x] Performance: particle fade during transitions, no backdrop-blur
+- [x] Dark/light mode (Cosmic ↔ Twilight themes)
+- [x] Theme toggle in kebab menu + sun/eclipse toggle in constellation
+- [x] PNG favicon variants (16, 32, 192, 512)
+- [x] Apple touch icon (180x180)
+- [x] Open Graph image (1200x630)
+- [x] RSS feed (`/rss.xml`)
+- [x] Text shadows for readability (replaces content containers)
+- [x] 404 "Lost in the Void" error page
+- [x] Room color transitions fixed (blob colors update during navigation)
+- [x] Theme persistence across View Transitions
+- [x] Mobile-friendly close hint in constellation menu
 
 ### Not Yet Implemented
-- [ ] Generate PNG favicon variants from SVG
-- [ ] Generate og-image.png from SVG template
 - [ ] Contact form integration
-- [ ] Dark/light mode toggle (currently dark only)
-- [ ] RSS feed for blog
+- [ ] Footer (attempted, removed — broke floating-in-space aesthetic)
 
 ---
 
@@ -741,4 +839,4 @@ src/
 
 ---
 
-*Last updated: 2026-01-13 (Phase 14)*
+*Last updated: 2026-01-14 (Phase 15)*

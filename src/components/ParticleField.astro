@@ -19,16 +19,28 @@
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Particle colors from design system (pre-computed RGB strings for performance)
-    const colors = {
-      ember: '212,165,116',
-      spark: '240,208,144',
-      flare: '255,244,224',
-      stardust: '248,176,216',
-      bloom: '208,120,200',
+    // Theme-specific particle colors (pre-computed RGB strings for performance)
+    const themeColors = {
+      cosmic: {
+        ember: '212,165,116',
+        spark: '240,208,144',
+        flare: '255,244,224',
+        stardust: '248,176,216',
+        bloom: '208,120,200',
+      },
+      twilight: {
+        lavender: '200,168,200',
+        dustyrose: '216,176,184',
+        pearl: '240,224,232',
+        mist: '224,200,224',
+        blush: '232,192,200',
+      }
     };
 
-    const colorKeys = Object.keys(colors);
+    // Current theme state
+    let currentTheme = document.documentElement.getAttribute('data-theme') === 'twilight' ? 'twilight' : 'cosmic';
+    let colors = themeColors[currentTheme];
+    let colorKeys = Object.keys(colors);
 
     // Pre-computed glow layer multipliers (radius multiplier, alpha multiplier)
     const GLOW_LAYERS = [
@@ -290,6 +302,18 @@
     // Also restore on page load (initial load and fallback)
     document.addEventListener('astro:page-load', () => {
       canvas.style.opacity = '1';
+    });
+
+    // Listen for theme changes and update particle colors
+    window.addEventListener('themechange', (e) => {
+      currentTheme = e.detail.theme;
+      colors = themeColors[currentTheme];
+      colorKeys = Object.keys(colors);
+
+      // Update existing particles to use new color palette
+      for (const particle of particles) {
+        particle.color = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+      }
     });
 
     requestAnimationFrame(animate);

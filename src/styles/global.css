@@ -100,6 +100,14 @@ html, body {
     0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
+/* Twilight theme: soft purple-tinted shadows */
+[data-theme="twilight"] .text-readable {
+  text-shadow:
+    0 0 20px rgba(240, 236, 248, 0.9),
+    0 0 40px rgba(232, 228, 240, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 /* --- Performance Utilities --- */
 /* Allows browser to skip rendering off-screen content */
 .content-auto {
@@ -264,6 +272,11 @@ html, body {
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
 
+  /* ============================================
+     COSMIC OCEAN (Dark Theme) - Default
+     Deep space, bioluminescent, nebulae
+     ============================================ */
+
   /* Backgrounds */
   --color-void: #0a0a14;
   --color-deep: #181828;
@@ -296,4 +309,53 @@ html, body {
   --color-text-primary: #e8e0f0;
   --color-text-secondary: #a098b0;
   --color-text-muted: #605870;
+}
+
+/* ============================================
+   TWILIGHT (Light Theme)
+   Soft dawn/dusk, muted cosmic, dreamy pastels
+   ============================================ */
+
+[data-theme="twilight"] {
+  /* Backgrounds - soft dusty blues and lavenders */
+  --color-void: #e8e4f0;
+  --color-deep: #d8d0e8;
+  --color-abyss: #c8c0d8;
+  --color-surface: #f0ecf8;
+
+  /* Primary - muted purples, softer orchid */
+  --color-nebula: #9080a8;
+  --color-orchid: #a890b8;
+  --color-wisteria: #b8a8c8;
+
+  /* Accents - dusty rose and soft coral */
+  --color-coral: #c8a0a8;
+  --color-rose: #c890b0;
+  --color-blush: #d8b0b8;
+
+  /* Glow - soft lavender halos */
+  --color-bloom: #d0b8d8;
+  --color-aurora: #c0a8c8;
+  --color-stardust: #e0c8e0;
+  --color-warmglow: #e8d8e8;
+  --color-pearl: #f0e0e8;
+
+  /* Particles - soft pastels */
+  --color-ember: #c8a890;
+  --color-spark: #d8c0a8;
+  --color-flare: #f0e8e0;
+
+  /* Text - soft charcoals with purple undertone */
+  --color-text-primary: #3a3848;
+  --color-text-secondary: #5a5868;
+  --color-text-muted: #8a8898;
+}
+
+/* Theme transition for smooth switching */
+html {
+  transition: background-color 0.3s ease;
+}
+
+html[data-theme="twilight"] body {
+  background-color: var(--color-void);
 }

@@ -1,0 +1,147 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Lost in the Void | 404"
+  description="This page has drifted beyond the known cosmos."
+  room="home"
+>
+  <div class="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+    <!-- Floating 404 -->
+    <div class="relative mb-8">
+      <span class="text-[8rem] md:text-[12rem] font-display font-light text-text-muted/20 select-none floating-text">
+        404
+      </span>
+      <!-- Decorative orbit ring -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="orbit-ring w-48 h-48 md:w-64 md:h-64 rounded-full border border-orchid/20"></div>
+      </div>
+      <!-- Small orbiting star -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="orbiting-star">
+          <span class="w-2 h-2 rounded-full bg-stardust shadow-[0_0_10px_var(--color-stardust)]"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message -->
+    <h1 class="text-2xl md:text-3xl font-display font-light text-text-primary mb-4">
+      Lost in the Void
+    </h1>
+
+    <p class="max-w-md text-text-secondary font-body leading-relaxed mb-8">
+      This celestial coordinate doesn't exist in our charts.
+      The page you seek has drifted beyond the known cosmos.
+    </p>
+
+    <!-- Navigation options -->
+    <div class="flex flex-col sm:flex-row gap-4">
+      <a
+        href="/"
+        class="btn-primary px-6 py-3 rounded-lg font-body text-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(144,72,160,0.4)] hover:-translate-y-0.5"
+      >
+        Return Home
+      </a>
+      <button
+        onclick="history.back()"
+        class="btn-ghost px-6 py-3 rounded-lg font-body text-sm text-text-secondary hover:text-text-primary transition-colors"
+      >
+        Go Back
+      </button>
+    </div>
+
+    <!-- Poetic hint -->
+    <p class="mt-16 text-sm text-text-muted italic">
+      Even stars sometimes wander from their constellations.
+    </p>
+  </div>
+</Layout>
+
+<style>
+  .btn-primary {
+    background: linear-gradient(135deg, var(--color-nebula), var(--color-orchid));
+    color: var(--color-text-primary);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--color-orchid), var(--color-wisteria));
+  }
+
+  .btn-ghost {
+    background: transparent;
+  }
+
+  .btn-ghost:hover {
+    background: var(--color-surface);
+  }
+
+  /* Floating animation for 404 text */
+  .floating-text {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Orbit ring pulse */
+  .orbit-ring {
+    animation: ring-pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes ring-pulse {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(1.05);
+    }
+  }
+
+  /* Orbiting star */
+  .orbiting-star {
+    width: 12rem;
+    height: 12rem;
+    animation: orbit 8s linear infinite;
+  }
+
+  @media (min-width: 768px) {
+    .orbiting-star {
+      width: 16rem;
+      height: 16rem;
+    }
+  }
+
+  .orbiting-star span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: block;
+  }
+
+  @keyframes orbit {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .floating-text,
+    .orbit-ring,
+    .orbiting-star {
+      animation: none;
+    }
+  }
+</style>
