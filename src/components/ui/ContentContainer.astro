@@ -1,19 +1,17 @@
 ---
 /**
- * ContentContainer - Semi-transparent backdrop for improved text readability
+ * ContentContainer - Text shadow wrapper for improved readability
  * Use this to wrap content that needs better contrast against the breathing background
+ * Uses text shadows instead of boxing to maintain the cosmic floating aesthetic
  */
 
 interface Props {
-  size?: 'sm' | 'md' | 'lg';
   class?: string;
 }
 
-const { size = 'md', class: className = '' } = Astro.props;
-
-const sizeClass = size === 'sm' ? 'content-container-sm' : size === 'lg' ? 'content-container-lg' : '';
+const { class: className = '' } = Astro.props;
 ---
 
-<div class:list={['content-container', sizeClass, className]}>
+<div class:list={['text-readable', className]}>
   <slot />
 </div>

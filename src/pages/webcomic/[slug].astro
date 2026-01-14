@@ -47,7 +47,7 @@ const { Content } = await page.render();
   <article class="min-h-screen px-6 py-24">
     <div class="max-w-4xl mx-auto">
       <!-- Header -->
-      <header class="mb-8 text-center content-container content-container-sm max-w-2xl mx-auto">
+      <header class="mb-8 text-center text-readable max-w-2xl mx-auto">
         <p class="text-sm text-text-muted mb-2">
           Chapter {page.data.chapter} · Page {page.data.page || '?'}
         </p>
@@ -126,7 +126,7 @@ const { Content } = await page.render();
       </nav>
 
       <!-- Transcript and notes -->
-      <div class="max-w-2xl mx-auto content-container content-container-sm">
+      <div class="max-w-2xl mx-auto text-readable">
         <!-- Transcript (for accessibility) -->
         {page.data.transcript && (
           <details class="mb-8">

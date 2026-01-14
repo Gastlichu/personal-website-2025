@@ -89,10 +89,10 @@ const colors = roomColors[room];
   </head>
   <body class="bg-void text-text-primary min-h-screen font-body overflow-x-hidden">
     <!-- Breathing Background (Layer 1) -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true" transition:persist="bg">
-      <div class:list={["breathing-blob blob-1 absolute w-[600px] h-[600px] rounded-full opacity-45 blur-[100px] transition-colors duration-300", colors.blob1]}></div>
-      <div class:list={["breathing-blob blob-2 absolute w-[500px] h-[500px] rounded-full opacity-40 blur-[80px] transition-colors duration-300", colors.blob2]}></div>
-      <div class:list={["breathing-blob blob-3 absolute w-[700px] h-[700px] rounded-full opacity-50 blur-[90px] transition-colors duration-300", colors.blob3]}></div>
+    <div id="breathing-bg" class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true" transition:persist="bg">
+      <div id="blob-1" class:list={["breathing-blob blob-1 absolute w-[600px] h-[600px] rounded-full opacity-45 blur-[100px] transition-colors duration-300", colors.blob1]}></div>
+      <div id="blob-2" class:list={["breathing-blob blob-2 absolute w-[500px] h-[500px] rounded-full opacity-40 blur-[80px] transition-colors duration-300", colors.blob2]}></div>
+      <div id="blob-3" class:list={["breathing-blob blob-3 absolute w-[700px] h-[700px] rounded-full opacity-50 blur-[90px] transition-colors duration-300", colors.blob3]}></div>
     </div>
 
     <!-- Particle Field (Layer 2 + Reactive Layer 3) -->
@@ -156,6 +156,79 @@ const colors = roomColors[room];
           }
           overlay.classList.remove('is-active');
         });
+      })();
+    </script>
+
+    <script is:inline>
+      // Room color updater - syncs blob colors after View Transitions
+      (function() {
+        if (window.__roomColorInitialized) return;
+        window.__roomColorInitialized = true;
+
+        // Room-specific color configurations (mirrors server-side roomColors)
+        const roomColors = {
+          home: { blob1: 'bg-nebula', blob2: 'bg-orchid', blob3: 'bg-abyss' },
+          blog: { blob1: 'bg-abyss', blob2: 'bg-nebula', blob3: 'bg-orchid' },
+          gallery: { blob1: 'bg-nebula', blob2: 'bg-coral', blob3: 'bg-abyss' },
+          about: { blob1: 'bg-abyss', blob2: 'bg-bloom', blob3: 'bg-nebula' },
+          styleguide: { blob1: 'bg-wisteria', blob2: 'bg-orchid', blob3: 'bg-nebula' },
+          games: { blob1: 'bg-aurora', blob2: 'bg-bloom', blob3: 'bg-abyss' },
+          webcomic: { blob1: 'bg-wisteria', blob2: 'bg-abyss', blob3: 'bg-orchid' },
+          photos: { blob1: 'bg-ember', blob2: 'bg-spark', blob3: 'bg-deep' },
+          links: { blob1: 'bg-coral', blob2: 'bg-spark', blob3: 'bg-nebula' },
+        };
+
+        // All possible color classes (for removal)
+        const allColorClasses = [
+          'bg-nebula', 'bg-orchid', 'bg-abyss', 'bg-coral', 'bg-bloom',
+          'bg-wisteria', 'bg-aurora', 'bg-ember', 'bg-spark', 'bg-deep'
+        ];
+
+        function getRoomFromPath(path) {
+          // Extract base room from path
+          const segments = path.split('/').filter(Boolean);
+          if (segments.length === 0) return 'home';
+
+          const baseRoom = segments[0];
+          // Map URL segments to room names
+          const roomMap = {
+            'blog': 'blog',
+            'gallery': 'gallery',
+            'about': 'about',
+            'style-guide': 'styleguide',
+            'games': 'games',
+            'webcomic': 'webcomic',
+            'photos': 'photos',
+            'links': 'links',
+          };
+          return roomMap[baseRoom] || 'home';
+        }
+
+        function updateBlobColors() {
+          const room = getRoomFromPath(window.location.pathname);
+          const colors = roomColors[room] || roomColors.home;
+
+          const blob1 = document.getElementById('blob-1');
+          const blob2 = document.getElementById('blob-2');
+          const blob3 = document.getElementById('blob-3');
+
+          if (!blob1 || !blob2 || !blob3) return;
+
+          // Remove all color classes, then add the new ones
+          [blob1, blob2, blob3].forEach(blob => {
+            allColorClasses.forEach(cls => blob.classList.remove(cls));
+          });
+
+          blob1.classList.add(colors.blob1);
+          blob2.classList.add(colors.blob2);
+          blob3.classList.add(colors.blob3);
+        }
+
+        // Update colors after View Transition swap
+        document.addEventListener('astro:after-swap', updateBlobColors);
+
+        // Also run on initial page load (in case of direct navigation)
+        document.addEventListener('astro:page-load', updateBlobColors);
       })();
     </script>
   </body>
