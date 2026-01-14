@@ -1,5 +1,5 @@
 ---
-import { ViewTransitions } from 'astro:transitions'
+import { ViewTransitions, fade } from 'astro:transitions'
 import '../styles/global.css'
 import ParticleField from '../components/ParticleField.astro'
 import ConstellationNav from '../components/ConstellationNav.astro'
@@ -90,9 +90,9 @@ const colors = roomColors[room];
   <body class="bg-void text-text-primary min-h-screen font-body overflow-x-hidden">
     <!-- Breathing Background (Layer 1) -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true" transition:persist="bg">
-      <div class:list={["breathing-blob blob-1 absolute w-[600px] h-[600px] rounded-full opacity-45 blur-[100px] transition-colors duration-1000", colors.blob1]}></div>
-      <div class:list={["breathing-blob blob-2 absolute w-[500px] h-[500px] rounded-full opacity-40 blur-[80px] transition-colors duration-1000", colors.blob2]}></div>
-      <div class:list={["breathing-blob blob-3 absolute w-[700px] h-[700px] rounded-full opacity-50 blur-[90px] transition-colors duration-1000", colors.blob3]}></div>
+      <div class:list={["breathing-blob blob-1 absolute w-[600px] h-[600px] rounded-full opacity-45 blur-[100px] transition-colors duration-300", colors.blob1]}></div>
+      <div class:list={["breathing-blob blob-2 absolute w-[500px] h-[500px] rounded-full opacity-40 blur-[80px] transition-colors duration-300", colors.blob2]}></div>
+      <div class:list={["breathing-blob blob-3 absolute w-[700px] h-[700px] rounded-full opacity-50 blur-[90px] transition-colors duration-300", colors.blob3]}></div>
     </div>
 
     <!-- Particle Field (Layer 2 + Reactive Layer 3) -->
@@ -108,10 +108,56 @@ const colors = roomColors[room];
       </p>
     </div>
 
+    <!-- Subtle Transition Overlay (only shows for slow loads) -->
+    <div id="transition-overlay" class="transition-overlay" aria-hidden="true" transition:persist="overlay">
+      <div class="overlay-glow"></div>
+    </div>
+
     <!-- Content -->
-    <main class="relative z-10 pt-10" transition:animate="fade">
+    <main class="relative z-10 pt-10" transition:animate={fade({ duration: '150ms' })}>
       <slot />
     </main>
+
+    <script is:inline>
+      // Subtle transition overlay - only shows for slow transitions
+      (function() {
+        const overlay = document.getElementById('transition-overlay');
+        if (!overlay || overlay.dataset.initialized) return;
+        overlay.dataset.initialized = 'true';
+
+        let showTimer = null;
+        const SHOW_DELAY = 150; // Only show overlay if transition takes longer than this
+
+        // Start timer when navigation begins
+        document.addEventListener('astro:before-preparation', () => {
+          // Clear any existing timer
+          if (showTimer) clearTimeout(showTimer);
+
+          // Only show overlay if loading takes longer than threshold
+          showTimer = setTimeout(() => {
+            overlay.classList.add('is-active');
+          }, SHOW_DELAY);
+        });
+
+        // Hide overlay and cancel timer when content is ready
+        document.addEventListener('astro:after-swap', () => {
+          if (showTimer) {
+            clearTimeout(showTimer);
+            showTimer = null;
+          }
+          overlay.classList.remove('is-active');
+        });
+
+        // Also hide on page load (for initial load and fallback)
+        document.addEventListener('astro:page-load', () => {
+          if (showTimer) {
+            clearTimeout(showTimer);
+            showTimer = null;
+          }
+          overlay.classList.remove('is-active');
+        });
+      })();
+    </script>
   </body>
 </html>
 
@@ -186,6 +232,64 @@ const colors = roomColors[room];
   @media (prefers-reduced-motion: reduce) {
     .breathing-blob {
       animation: none;
+    }
+  }
+
+  /* Subtle Transition Overlay - only appears for slow loads */
+  .transition-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease-out;
+    backdrop-filter: blur(0px);
+  }
+
+  .transition-overlay.is-active {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+
+  .overlay-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(208, 120, 200, 0.15) 0%,
+      rgba(144, 72, 160, 0.08) 40%,
+      transparent 70%
+    );
+    animation: soft-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes soft-pulse {
+    0%, 100% {
+      opacity: 0.6;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .overlay-glow {
+      animation: none;
+    }
+    .transition-overlay {
+      transition: opacity 0.1s;
+      backdrop-filter: none;
+    }
+    .transition-overlay.is-active {
+      backdrop-filter: none;
+      background: rgba(10, 10, 20, 0.5);
     }
   }
 </style>

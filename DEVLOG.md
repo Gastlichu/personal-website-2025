@@ -424,6 +424,38 @@ Added a linktree-style Links room for external links, shop items, and social pro
 
 ---
 
+### Phase 12: Transition Optimization & Loading States
+
+Optimized page transitions for snappier navigation and added a subtle loading overlay for slow connections.
+
+**What was built:**
+
+**Faster Transitions:**
+- Content fade reduced from default ~300ms to **150ms**
+- Blob color transitions reduced from 1000ms to **300ms**
+- Particle drift duration reduced from 800ms to **400ms**
+- Overall perceived transition time cut from ~1s to ~150-300ms
+
+**Smart Loading Overlay:**
+- Only appears if transition takes longer than **150ms threshold**
+- Fast navigations skip the overlay entirely (no visual glitch)
+- Subtle **backdrop blur** (4px) instead of solid background
+- Soft **pulsing orchid glow** in center
+- Quick 150ms fade in/out
+- Respects `prefers-reduced-motion`
+
+**Files modified:**
+- `src/layouts/Layout.astro` — Added custom fade duration, faster blob transitions, loading overlay with smart timing
+- `src/components/ParticleField.astro` — Reduced transition drift duration
+
+**Technical notes:**
+- Uses Astro's `fade({ duration: '150ms' })` for custom transition timing
+- Overlay controlled via `astro:before-preparation` and `astro:after-swap` events
+- Timer-based threshold ensures overlay only shows for genuinely slow loads
+- Backdrop-filter blur provides dreamy effect without heavy visuals
+
+---
+
 ## Current Project State
 
 ### File Structure
@@ -530,6 +562,8 @@ src/
 - [x] Webcomic room with chapter navigation and reader
 - [x] Photos room with photography gallery
 - [x] Links room (linktree-style external links directory)
+- [x] Optimized transitions (150ms content fade, 300ms blob transitions)
+- [x] Smart loading overlay (only appears for slow loads >150ms)
 
 ### Not Yet Implemented
 - [ ] Generate PNG favicon variants from SVG
