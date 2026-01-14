@@ -2,10 +2,11 @@
 /**
  * ParticleField - Floating luminescent particles with cursor interaction
  * Part of the Cosmic Ocean interactive background system
+ * Includes directional drift during room transitions
  */
 ---
 
-<canvas id="particle-field" class="fixed inset-0 pointer-events-none z-0" aria-hidden="true" transition:persist="particles"></canvas>
+<canvas id="particle-field" class="fixed inset-0 pointer-events-none z-0" style="will-change: contents;" aria-hidden="true" transition:persist="particles"></canvas>
 
 <script is:inline>
   // Prevent re-initialization if already running
@@ -13,21 +14,43 @@
     window.__particleFieldInitialized = true;
 
     const canvas = document.getElementById('particle-field');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
 
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Particle colors from design system
+    // Particle colors from design system (pre-computed RGB strings for performance)
     const colors = {
-      ember: { r: 212, g: 165, b: 116 },
-      spark: { r: 240, g: 208, b: 144 },
-      flare: { r: 255, g: 244, b: 224 },
-      stardust: { r: 248, g: 176, b: 216 },
-      bloom: { r: 208, g: 120, b: 200 },
+      ember: '212,165,116',
+      spark: '240,208,144',
+      flare: '255,244,224',
+      stardust: '248,176,216',
+      bloom: '208,120,200',
     };
 
     const colorKeys = Object.keys(colors);
+
+    // Pre-computed glow layer multipliers (radius multiplier, alpha multiplier)
+    const GLOW_LAYERS = [
+      [4, 0.1],
+      [2.5, 0.2],
+      [1.5, 0.4],
+      [1, 1],
+    ];
+    const TWO_PI = Math.PI * 2;
+
+    // Constellation positions (as percentages, matching ConstellationNav)
+    const roomPositions = {
+      '/': { x: 50, y: 22 },
+      '/games': { x: 15, y: 28 },
+      '/style-guide': { x: 85, y: 28 },
+      '/blog': { x: 24, y: 42 },
+      '/gallery': { x: 76, y: 42 },
+      '/links': { x: 50, y: 52 },
+      '/webcomic': { x: 32, y: 62 },
+      '/photos': { x: 68, y: 62 },
+      '/about': { x: 50, y: 78 },
+    };
 
     let particles = [];
     let mouseX = -1000;
@@ -36,6 +59,12 @@
     let mouseDecayTimer = 0;
     const MOUSE_DECAY_TIME = 2000;
     const INTERACTION_RADIUS = 180;
+
+    // Transition drift state
+    let transitionDrift = { x: 0, y: 0 };
+    let transitionDriftDecay = 0;
+    const TRANSITION_DRIFT_STRENGTH = 3;
+    const TRANSITION_DRIFT_DURATION = 800;
 
     function getParticleCount() {
       if (prefersReducedMotion) return 20;
@@ -77,22 +106,17 @@
     }
 
     function drawParticle(p, time) {
-      const color = colors[p.color];
+      const rgb = colors[p.color];
       const twinkle = Math.sin(time * 0.001 * p.twinkleSpeed + p.twinkleOffset);
       const currentOpacity = p.opacity * (0.5 + twinkle * 0.5);
       const currentSize = p.size * (0.8 + twinkle * 0.2);
 
-      const glowLayers = [
-        { radius: currentSize * 4, alpha: currentOpacity * 0.1 },
-        { radius: currentSize * 2.5, alpha: currentOpacity * 0.2 },
-        { radius: currentSize * 1.5, alpha: currentOpacity * 0.4 },
-        { radius: currentSize, alpha: currentOpacity },
-      ];
-
-      for (const layer of glowLayers) {
+      // Draw glow layers using pre-computed multipliers
+      for (let i = 0; i < 4; i++) {
+        const layer = GLOW_LAYERS[i];
         ctx.beginPath();
-        ctx.arc(p.x, p.y, layer.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${layer.alpha})`;
+        ctx.arc(p.x, p.y, currentSize * layer[0], 0, TWO_PI);
+        ctx.fillStyle = 'rgba(' + rgb + ',' + (currentOpacity * layer[1]) + ')';
         ctx.fill();
       }
     }
@@ -118,6 +142,13 @@
         }
       }
 
+      // Apply transition drift (room-to-room navigation)
+      if (transitionDriftDecay > 0) {
+        const driftFactor = transitionDriftDecay / TRANSITION_DRIFT_DURATION;
+        p.vx += transitionDrift.x * driftFactor * dt * 0.1;
+        p.vy += transitionDrift.y * driftFactor * dt * 0.1;
+      }
+
       p.x += driftX + p.vx;
       p.y += driftY + p.vy;
       p.vx *= 0.98;
@@ -131,16 +162,28 @@
     }
 
     let lastTime = 0;
+    const MAX_DELTA = 50; // Cap deltaTime to prevent jumps after main thread blocks
 
     function animate(time) {
-      const deltaTime = lastTime ? time - lastTime : 16.67;
+      let deltaTime = lastTime ? time - lastTime : 16.67;
       lastTime = time;
+
+      // Clamp deltaTime to prevent particle jumps when main thread is blocked (clicks, navigation)
+      if (deltaTime > MAX_DELTA) {
+        deltaTime = MAX_DELTA;
+      }
 
       if (isMouseActive && mouseDecayTimer > 0) {
         mouseDecayTimer -= deltaTime;
         if (mouseDecayTimer <= 0) {
           isMouseActive = false;
         }
+      }
+
+      // Decay transition drift
+      if (transitionDriftDecay > 0) {
+        transitionDriftDecay -= deltaTime;
+        if (transitionDriftDecay < 0) transitionDriftDecay = 0;
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -184,6 +227,47 @@
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('touchmove', handleTouchMove, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave);
+
+    // Handle room transitions - trigger directional particle drift
+    function triggerTransitionDrift(fromPath, toPath) {
+      if (prefersReducedMotion) return;
+
+      // Normalize paths (handle trailing slashes and sub-pages)
+      const normalizeRoom = (path) => {
+        // Extract base room from path (e.g., /blog/some-post -> /blog)
+        const segments = path.split('/').filter(Boolean);
+        if (segments.length === 0) return '/';
+        const baseRoom = '/' + segments[0];
+        return roomPositions[baseRoom] ? baseRoom : path;
+      };
+
+      const fromRoom = normalizeRoom(fromPath);
+      const toRoom = normalizeRoom(toPath);
+
+      const fromPos = roomPositions[fromRoom];
+      const toPos = roomPositions[toRoom];
+
+      if (!fromPos || !toPos || fromRoom === toRoom) return;
+
+      // Calculate direction vector (opposite to travel direction for parallax effect)
+      const dx = fromPos.x - toPos.x;
+      const dy = fromPos.y - toPos.y;
+      const length = Math.sqrt(dx * dx + dy * dy);
+
+      if (length > 0) {
+        // Normalize and apply strength (particles drift opposite to travel, like stars passing by)
+        transitionDrift.x = (dx / length) * TRANSITION_DRIFT_STRENGTH;
+        transitionDrift.y = (dy / length) * TRANSITION_DRIFT_STRENGTH;
+        transitionDriftDecay = TRANSITION_DRIFT_DURATION;
+      }
+    }
+
+    // Listen for View Transitions navigation
+    document.addEventListener('astro:before-swap', (e) => {
+      const fromPath = window.location.pathname;
+      const toPath = new URL(e.to).pathname;
+      triggerTransitionDrift(fromPath, toPath);
+    });
 
     requestAnimationFrame(animate);
   }

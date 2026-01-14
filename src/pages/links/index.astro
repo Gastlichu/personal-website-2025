@@ -1,0 +1,165 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Badge from '../../components/ui/Badge.astro';
+
+// Get all links, sorted by order then by title
+const allLinks = (await getCollection('links'))
+  .sort((a, b) => {
+    if (a.data.order !== b.data.order) {
+      return a.data.order - b.data.order;
+    }
+    return a.data.title.localeCompare(b.data.title);
+  });
+
+// Group by category
+const categories = {
+  shop: { label: 'Shop', links: allLinks.filter(l => l.data.category === 'shop') },
+  social: { label: 'Social', links: allLinks.filter(l => l.data.category === 'social') },
+  portfolio: { label: 'Portfolio', links: allLinks.filter(l => l.data.category === 'portfolio') },
+  support: { label: 'Support', links: allLinks.filter(l => l.data.category === 'support') },
+  other: { label: 'Other', links: allLinks.filter(l => l.data.category === 'other') },
+};
+
+// Featured links (shown at top)
+const featured = allLinks.filter(l => l.data.featured);
+
+// Category order for display
+const categoryOrder = ['shop', 'social', 'portfolio', 'support', 'other'] as const;
+---
+
+<Layout
+  title="Links | Cosmic Ocean"
+  description="Find me across the cosmos — shop, social media, portfolio, and ways to support my work."
+  room="links"
+>
+  <div class="min-h-screen px-6 py-24">
+    <div class="max-w-2xl mx-auto">
+      <!-- Room Title -->
+      <header class="mb-12 text-center">
+        <h1 class="text-4xl md:text-5xl font-display font-light text-text-primary mb-4">
+          <span class="glow-links">Links</span>
+        </h1>
+        <p class="text-text-secondary font-body">
+          Find me across the cosmos
+        </p>
+      </header>
+
+      <!-- Featured Links -->
+      {featured.length > 0 && (
+        <section class="mb-12">
+          <div class="space-y-4">
+            {featured.map((link) => (
+              <a
+                href={link.data.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link-card featured block p-6 rounded-xl bg-surface/60 border border-coral/40 transition-all duration-300 hover:border-coral hover:shadow-[0_0_30px_rgba(240,128,112,0.2)] hover:scale-[1.02] group"
+              >
+                <div class="flex items-start gap-4">
+                  {link.data.icon && (
+                    <span class="text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                      {link.data.icon}
+                    </span>
+                  )}
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h3 class="font-display text-lg text-text-primary group-hover:text-coral transition-colors">
+                        {link.data.title}
+                      </h3>
+                      <Badge variant="warm">Featured</Badge>
+                    </div>
+                    {link.data.description && (
+                      <p class="text-sm text-text-secondary line-clamp-2">
+                        {link.data.description}
+                      </p>
+                    )}
+                  </div>
+                  <span class="text-text-muted group-hover:text-coral transition-colors flex-shrink-0">
+                    ↗
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- Categories -->
+      {categoryOrder.map((categoryKey) => {
+        const category = categories[categoryKey];
+        // Filter out featured links from category display
+        const categoryLinks = category.links.filter(l => !l.data.featured);
+        if (categoryLinks.length === 0) return null;
+
+        return (
+          <section class="mb-10">
+            <h2 class="text-h3 text-text-secondary mb-4 flex items-center gap-2">
+              <span class="w-8 h-px bg-gradient-to-r from-coral/50 to-transparent"></span>
+              {category.label}
+            </h2>
+            <div class="space-y-3">
+              {categoryLinks.map((link) => (
+                <a
+                  href={link.data.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="link-card block p-4 rounded-lg bg-surface/40 border border-coral/20 transition-all duration-300 hover:border-coral/50 hover:bg-surface/60 group"
+                >
+                  <div class="flex items-center gap-3">
+                    {link.data.icon && (
+                      <span class="text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                        {link.data.icon}
+                      </span>
+                    )}
+                    <div class="flex-1 min-w-0">
+                      <h3 class="font-display text-text-primary group-hover:text-coral transition-colors">
+                        {link.data.title}
+                      </h3>
+                      {link.data.description && (
+                        <p class="text-sm text-text-muted truncate">
+                          {link.data.description}
+                        </p>
+                      )}
+                    </div>
+                    <span class="text-text-muted group-hover:text-coral transition-colors flex-shrink-0">
+                      ↗
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+
+      {allLinks.length === 0 && (
+        <p class="text-center text-text-muted">
+          Links materializing from the void...
+        </p>
+      )}
+
+      <!-- Footer -->
+      <footer class="mt-16 pt-8 border-t border-coral/20 text-center">
+        <p class="text-sm text-text-muted font-body">
+          All links open in a new tab
+        </p>
+      </footer>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .glow-links {
+    text-shadow:
+      0 0 20px var(--color-coral),
+      0 0 40px var(--color-spark);
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

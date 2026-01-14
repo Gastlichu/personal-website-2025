@@ -1,0 +1,118 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Button from '../../components/ui/Button.astro';
+
+// Get all webcomic pages, sorted by chapter and page
+const pages = (await getCollection('webcomic'))
+  .sort((a, b) => {
+    if (a.data.chapter !== b.data.chapter) {
+      return a.data.chapter - b.data.chapter;
+    }
+    return (a.data.page || 0) - (b.data.page || 0);
+  });
+
+// Group by chapter
+const chapters = pages.reduce((acc, page) => {
+  const chapterNum = page.data.chapter;
+  if (!acc[chapterNum]) {
+    acc[chapterNum] = [];
+  }
+  acc[chapterNum].push(page);
+  return acc;
+}, {} as Record<number, typeof pages>);
+
+const chapterNumbers = Object.keys(chapters).map(Number).sort((a, b) => a - b);
+
+// Get latest page for "Continue Reading"
+const latestPage = pages[pages.length - 1];
+const firstPage = pages[0];
+---
+
+<Layout
+  title="Webcomic | Cosmic Ocean"
+  description="An ongoing visual narrative exploring depth, discovery, and the spaces between worlds."
+  room="webcomic"
+>
+  <div class="min-h-screen px-6 py-24">
+    <div class="max-w-4xl mx-auto">
+      <!-- Room Title -->
+      <header class="mb-16 text-center">
+        <h1 class="text-4xl md:text-5xl font-display font-light text-text-primary mb-4">
+          <span class="glow-comic">Webcomic</span>
+        </h1>
+        <p class="text-text-secondary font-body max-w-lg mx-auto">
+          An ongoing visual narrative exploring depth, discovery, and the spaces between worlds.
+        </p>
+
+        <!-- Quick Actions -->
+        {pages.length > 0 && (
+          <div class="flex flex-wrap justify-center gap-4 mt-8">
+            <Button href={`/webcomic/${firstPage.slug}`} variant="primary">
+              Start Reading
+            </Button>
+            {latestPage !== firstPage && (
+              <Button href={`/webcomic/${latestPage.slug}`} variant="secondary">
+                Latest Page
+              </Button>
+            )}
+          </div>
+        )}
+      </header>
+
+      <!-- Chapters -->
+      {chapterNumbers.map((chapterNum) => (
+        <section class="mb-12">
+          <h2 class="text-h3 text-text-secondary mb-6">Chapter {chapterNum}</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {chapters[chapterNum].map((page) => (
+              <a href={`/webcomic/${page.slug}`} class="block group">
+                <article class="comic-page relative rounded-lg bg-surface/50 border border-wisteria/20 overflow-hidden transition-all duration-300 hover:border-wisteria/50 hover:shadow-[0_0_20px_rgba(144,88,184,0.2)]">
+                  <div class="aspect-[3/4] bg-gradient-to-br from-abyss/50 to-nebula/30 flex items-center justify-center overflow-hidden">
+                    {page.data.image ? (
+                      <Image
+                        src={page.data.image}
+                        alt={page.data.title}
+                        width={300}
+                        height={400}
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span class="text-4xl text-wisteria/40 font-display font-light select-none group-hover:scale-110 transition-transform">
+                        {page.data.page || '?'}
+                      </span>
+                    )}
+                  </div>
+                  <div class="p-3 text-center">
+                    <p class="text-sm text-text-muted">
+                      Page {page.data.page || '?'}
+                    </p>
+                  </div>
+                </article>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {pages.length === 0 && (
+        <div class="text-center">
+          <p class="text-text-muted mb-6">
+            The first pages are being drawn in the deep...
+          </p>
+          <p class="text-6xl text-wisteria/30">◇</p>
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .glow-comic {
+    text-shadow:
+      0 0 20px var(--color-wisteria),
+      0 0 40px var(--color-orchid);
+  }
+</style>

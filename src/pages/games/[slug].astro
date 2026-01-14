@@ -1,0 +1,143 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+
+export async function getStaticPaths() {
+  const games = await getCollection('games');
+  return games.map((game) => ({
+    params: { slug: game.slug },
+    props: { game },
+  }));
+}
+
+interface Props {
+  game: CollectionEntry<'games'>;
+}
+
+const { game } = Astro.props;
+const { Content } = await game.render();
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case 'Released': return 'warm';
+    case 'In Development': return 'default';
+    case 'Prototype': return 'outline';
+    case 'Jam Entry': return 'outline';
+    default: return 'default';
+  }
+}
+---
+
+<Layout
+  title={`${game.data.title} | Cosmic Ocean`}
+  description={game.data.description}
+  room="games"
+>
+  <article class="min-h-screen px-6 py-24">
+    <div class="max-w-4xl mx-auto">
+      <!-- Back link -->
+      <nav class="mb-8">
+        <Button href="/games" variant="ghost" size="sm">
+          ← Back to Games
+        </Button>
+      </nav>
+
+      <!-- Header -->
+      <header class="mb-12">
+        <div class="flex flex-wrap gap-2 mb-4">
+          <Badge variant={getStatusColor(game.data.status)}>{game.data.status}</Badge>
+          {game.data.platform.map((p) => (
+            <Badge variant="outline">{p}</Badge>
+          ))}
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-display font-light text-text-primary mb-4">
+          <span class="glow-game">{game.data.title}</span>
+        </h1>
+
+        <p class="text-lg text-text-secondary leading-relaxed mb-6">
+          {game.data.description}
+        </p>
+
+        <!-- Action buttons -->
+        <div class="flex flex-wrap gap-4">
+          {game.data.playUrl && (
+            <Button href={game.data.playUrl} variant="primary">
+              Play Now
+            </Button>
+          )}
+          {game.data.sourceUrl && (
+            <Button href={game.data.sourceUrl} variant="secondary">
+              View Source
+            </Button>
+          )}
+        </div>
+      </header>
+
+      <!-- Game Image -->
+      <div class="aspect-video rounded-lg bg-surface border border-aurora/20 flex items-center justify-center overflow-hidden mb-12">
+        {game.data.image ? (
+          <Image
+            src={game.data.image}
+            alt={game.data.title}
+            width={1200}
+            height={675}
+            class="w-full h-full object-cover"
+            loading="eager"
+          />
+        ) : (
+          <span class="text-8xl text-aurora/30 font-display font-light select-none">◈</span>
+        )}
+      </div>
+
+      <!-- Content -->
+      <div class="prose-game mb-12">
+        <Content />
+      </div>
+
+      <!-- Tags -->
+      {game.data.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-12">
+          {game.data.tags.map((tag) => (
+            <Badge variant="outline">{tag}</Badge>
+          ))}
+        </div>
+      )}
+
+      <!-- Footer -->
+      <footer class="pt-8 border-t border-aurora/20">
+        <Button href="/games" variant="secondary">
+          ← All Games
+        </Button>
+      </footer>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .glow-game {
+    text-shadow:
+      0 0 20px var(--color-aurora),
+      0 0 40px var(--color-bloom);
+  }
+</style>
+
+<style is:global>
+  .prose-game {
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    line-height: 1.7;
+  }
+
+  .prose-game p {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose-game em {
+    color: var(--color-aurora);
+    font-style: italic;
+  }
+</style>

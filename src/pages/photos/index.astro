@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Badge from '../../components/ui/Badge.astro';
+
+// Get all photos, sorted by date (newest first)
+const photos = (await getCollection('photos'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Separate featured and regular
+const featured = photos.filter(p => p.data.featured);
+const regular = photos.filter(p => !p.data.featured);
+---
+
+<Layout
+  title="Photos | Cosmic Ocean"
+  description="Photography capturing liminal moments — bioluminescent shores, fog-wrapped forests, and skies full of stars."
+  room="photos"
+>
+  <div class="min-h-screen px-6 py-24">
+    <div class="max-w-6xl mx-auto">
+      <!-- Room Title -->
+      <header class="mb-16 text-center">
+        <h1 class="text-4xl md:text-5xl font-display font-light text-text-primary mb-4">
+          <span class="glow-photo">Photos</span>
+        </h1>
+        <p class="text-text-secondary font-body">
+          Capturing liminal moments in light
+        </p>
+      </header>
+
+      <!-- Featured Photos -->
+      {featured.length > 0 && (
+        <section class="mb-16">
+          <h2 class="text-h3 text-text-secondary mb-6">Featured</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {featured.map((photo) => (
+              <a href={`/photos/${photo.slug}`} class="block group">
+                <article class="photo-card relative rounded-lg bg-surface/50 border border-ember/30 overflow-hidden transition-all duration-300 hover:border-ember/60 hover:shadow-[0_0_30px_rgba(212,165,116,0.15)]">
+                  <div class="aspect-[3/2] bg-gradient-to-br from-deep to-surface flex items-center justify-center overflow-hidden">
+                    {photo.data.image ? (
+                      <Image
+                        src={photo.data.image}
+                        alt={photo.data.title}
+                        width={800}
+                        height={533}
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span class="text-6xl text-ember/40 font-display font-light select-none group-hover:scale-110 transition-transform">❋</span>
+                    )}
+                  </div>
+                  <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-void/95 via-void/70 to-transparent">
+                    <h3 class="font-display text-lg text-text-primary group-hover:text-ember transition-colors">
+                      {photo.data.title}
+                    </h3>
+                    <p class="text-sm text-text-muted mt-1">
+                      {photo.data.location && `${photo.data.location} · `}{photo.data.date.getFullYear()}
+                    </p>
+                  </div>
+                </article>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- All Photos Grid -->
+      <section>
+        {featured.length > 0 && regular.length > 0 && (
+          <h2 class="text-h3 text-text-secondary mb-6">All Photos</h2>
+        )}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {regular.map((photo) => (
+            <a href={`/photos/${photo.slug}`} class="block group">
+              <article class="photo-card relative rounded-lg bg-surface/50 border border-ember/20 overflow-hidden transition-all duration-300 hover:border-ember/50">
+                <div class="aspect-square bg-gradient-to-br from-deep to-surface flex items-center justify-center overflow-hidden">
+                  {photo.data.image ? (
+                    <Image
+                      src={photo.data.image}
+                      alt={photo.data.title}
+                      width={500}
+                      height={500}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span class="text-5xl text-ember/30 font-display font-light select-none group-hover:scale-110 transition-transform">❋</span>
+                  )}
+                </div>
+                <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-void/90 via-void/60 to-transparent">
+                  <h3 class="font-display text-text-primary group-hover:text-ember transition-colors">
+                    {photo.data.title}
+                  </h3>
+                  <p class="text-sm text-text-muted mt-1">
+                    {photo.data.location || photo.data.date.getFullYear()}
+                  </p>
+                </div>
+              </article>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {photos.length === 0 && (
+        <p class="text-center text-text-muted">
+          Photographs developing in the darkroom...
+        </p>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .glow-photo {
+    text-shadow:
+      0 0 20px var(--color-ember),
+      0 0 40px var(--color-spark);
+  }
+</style>

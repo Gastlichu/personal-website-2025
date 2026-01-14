@@ -4,14 +4,26 @@ import '../styles/global.css'
 import ParticleField from '../components/ParticleField.astro'
 import ConstellationNav from '../components/ConstellationNav.astro'
 
-export type RoomVibe = 'home' | 'blog' | 'gallery' | 'about' | 'styleguide';
+export type RoomVibe = 'home' | 'blog' | 'gallery' | 'about' | 'styleguide' | 'games' | 'webcomic' | 'photos' | 'links';
 
 interface Props {
   title: string;
+  description?: string;
+  image?: string;
   room?: RoomVibe;
+  article?: boolean;
 }
 
-const { title, room = 'home' } = Astro.props;
+const {
+  title,
+  description = "Creative developer and digital artist exploring the liminal space where deep ocean meets outer space.",
+  image = "/og-image.png",
+  room = 'home',
+  article = false,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImageURL = new URL(image, Astro.site);
 
 // Room-specific color configurations
 const roomColors: Record<RoomVibe, { blob1: string; blob2: string; blob3: string }> = {
@@ -20,6 +32,10 @@ const roomColors: Record<RoomVibe, { blob1: string; blob2: string; blob3: string
   gallery: { blob1: 'bg-nebula', blob2: 'bg-coral', blob3: 'bg-abyss' },    // Warmer coral accent
   about: { blob1: 'bg-abyss', blob2: 'bg-bloom', blob3: 'bg-nebula' },      // Soft glow
   styleguide: { blob1: 'bg-wisteria', blob2: 'bg-orchid', blob3: 'bg-nebula' }, // Bright, reference
+  games: { blob1: 'bg-aurora', blob2: 'bg-bloom', blob3: 'bg-abyss' },      // Playful aurora glow
+  webcomic: { blob1: 'bg-wisteria', blob2: 'bg-abyss', blob3: 'bg-orchid' }, // Dreamy, narrative
+  photos: { blob1: 'bg-ember', blob2: 'bg-spark', blob3: 'bg-deep' },       // Warm, amber tones
+  links: { blob1: 'bg-coral', blob2: 'bg-spark', blob3: 'bg-nebula' },      // Warm, inviting
 };
 
 const colors = roomColors[room];
@@ -30,14 +46,45 @@ const colors = roomColors[room];
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+
+    <!-- Favicon & Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0a0a14" />
+
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="author" content="José Angel (Gastlichu)" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={article ? "article" : "website"} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImageURL} />
+    <meta property="og:site_name" content="Cosmic Ocean" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageURL} />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Outfit:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <title>{title}</title>
+
     <ViewTransitions />
   </head>
   <body class="bg-void text-text-primary min-h-screen font-body overflow-x-hidden">
@@ -54,8 +101,15 @@ const colors = roomColors[room];
     <!-- Navigation -->
     <ConstellationNav />
 
+    <!-- Under Construction Banner -->
+    <div class="fixed top-0 inset-x-0 z-40 bg-surface/80 backdrop-blur-sm border-b border-orchid/20 py-2 px-4 text-center" transition:persist="banner">
+      <p class="text-sm text-text-muted font-body">
+        <span class="text-orchid">Under construction</span> — Content is placeholder text while the site takes shape
+      </p>
+    </div>
+
     <!-- Content -->
-    <main class="relative z-10" transition:animate="fade">
+    <main class="relative z-10 pt-10" transition:animate="fade">
       <slot />
     </main>
   </body>

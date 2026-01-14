@@ -1,5 +1,6 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Badge from '../../components/ui/Badge.astro';
 import Button from '../../components/ui/Button.astro';
@@ -27,7 +28,11 @@ function formatDate(date: Date): string {
 }
 ---
 
-<Layout title={`${artwork.data.title} | Cosmic Ocean`} room="gallery">
+<Layout
+  title={`${artwork.data.title} | Cosmic Ocean`}
+  description={artwork.data.description || `${artwork.data.title} — ${artwork.data.medium} artwork by José Angel`}
+  room="gallery"
+>
   <article class="min-h-screen px-6 py-24">
     <div class="max-w-4xl mx-auto">
       <!-- Back link -->
@@ -39,9 +44,20 @@ function formatDate(date: Date): string {
 
       <!-- Artwork Display -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <!-- Image placeholder -->
-        <div class="aspect-[4/5] rounded-lg bg-surface border border-coral/20 flex items-center justify-center">
-          <span class="text-8xl text-coral/30 font-display font-light select-none">✦</span>
+        <!-- Image -->
+        <div class="aspect-[4/5] rounded-lg bg-surface border border-coral/20 flex items-center justify-center overflow-hidden">
+          {artwork.data.image ? (
+            <Image
+              src={artwork.data.image}
+              alt={artwork.data.title}
+              width={800}
+              height={1000}
+              class="w-full h-full object-cover"
+              loading="eager"
+            />
+          ) : (
+            <span class="text-8xl text-coral/30 font-display font-light select-none">✦</span>
+          )}
         </div>
 
         <!-- Details -->

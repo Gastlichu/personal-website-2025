@@ -216,11 +216,228 @@ Set up Astro content collections for blog posts and gallery items.
 
 ---
 
+### Phase 7: Bug Fixes & Enhanced Transitions
+
+Polished the particle system and added directional drift during room transitions.
+
+**What was built:**
+- **Particle freeze fix:** Capped deltaTime to 50ms to prevent particle jumps when main thread is blocked (clicking, navigation)
+- **Under construction banner:** Fixed banner at top of all pages with subtle orchid accent, persists across transitions
+- **Directional particle drift:** Particles now drift in the direction of travel when navigating between rooms
+  - Uses constellation positions to calculate direction vector
+  - 800ms drift duration with smooth decay
+  - Handles sub-pages (e.g., `/blog/some-post` maps to `/blog` room)
+  - Respects `prefers-reduced-motion`
+
+**Files modified:**
+- `src/components/ParticleField.astro` — Added deltaTime cap, room positions, transition drift logic
+- `src/layouts/Layout.astro` — Added under construction banner with `transition:persist`
+
+**Technical notes:**
+- Main thread blocking during click events was causing large deltaTime spikes; capping at 50ms ensures smooth animation resume
+- Transition drift uses `astro:before-swap` event to detect navigation before page swap occurs
+- Direction calculated from source room position to destination room position in constellation space
+
+---
+
+### Phase 8: Meta & SEO + Favicon & Branding
+
+Added comprehensive SEO support and cosmic-themed branding assets.
+
+**What was built:**
+
+**SEO & Meta Tags:**
+- Added `description`, `image`, and `article` props to Layout component
+- Open Graph meta tags (og:title, og:description, og:image, og:url, og:type, og:site_name)
+- Twitter Card meta tags (summary_large_image)
+- Canonical URLs using Astro's `site` config
+- Per-page descriptions for all rooms
+- Blog posts marked as `article` type for better social sharing
+
+**Favicon & Branding:**
+- Custom SVG favicon with constellation design (4 stars + center accent)
+- Uses cosmic color palette (void background, stardust/orchid stars)
+- Web manifest for PWA-ready setup
+- Theme color set to void (#0a0a14)
+- OG image template (SVG) with full cosmic branding
+
+**Files created:**
+- `public/favicon.svg` — Constellation icon with cosmic gradients
+- `public/og-image.svg` — Social share image template (1200×630)
+- `public/site.webmanifest` — PWA manifest
+- `public/BRANDING-ASSETS.md` — Guide for generating PNG versions
+
+**Files modified:**
+- `astro.config.mjs` — Added `site: 'https://gastlichu.com'`
+- `src/layouts/Layout.astro` — Full SEO meta tags, favicon links, theme color
+- All page files — Added SEO descriptions
+
+**Technical notes:**
+- SVG favicon works in modern browsers; PNG fallbacks documented for older browsers
+- OG images must be raster (PNG/JPG) — SVG provided as template for conversion
+- Canonical URLs require `Astro.site` which needs `site` in astro.config.mjs
+
+---
+
+### Phase 9: Image Optimization
+
+Set up Astro's built-in image optimization for the gallery.
+
+**What was built:**
+- Updated content schema to use Astro's `image()` helper for automatic optimization
+- Gallery pages now use `<Image />` component with:
+  - Automatic format conversion (WebP/AVIF)
+  - Responsive sizing
+  - Lazy loading for thumbnails, eager loading for detail pages
+  - Smooth hover zoom transitions
+- Graceful fallback to star placeholder when no image is set
+- Created `src/assets/gallery/` directory for artwork images
+
+**Files modified:**
+- `src/content/config.ts` — Updated schema to use `image()` from `astro:schema`
+- `src/pages/gallery/index.astro` — Added `<Image />` component for thumbnails
+- `src/pages/gallery/[slug].astro` — Added `<Image />` component for full artwork
+
+**Files created:**
+- `src/assets/gallery/README.md` — Guide for adding artwork images
+
+**How to add artwork images:**
+1. Place image in `src/assets/gallery/` (e.g., `nebula-heart.jpg`)
+2. Reference in frontmatter: `image: ../../../assets/gallery/nebula-heart.jpg`
+3. Astro automatically optimizes on build
+
+---
+
+### Phase 10: Additional Rooms
+
+Added three new content rooms: Games, Webcomic, and Photos.
+
+**What was built:**
+
+**Games Room:**
+- Content collection for game projects (released, in development, prototypes, jam entries)
+- Schema: title, description, date, status, platform, image, playUrl, sourceUrl, tags, featured
+- Grid layout with featured games section
+- Individual game pages with play/source buttons
+- Aurora-tinted room vibe (bg-aurora, bg-bloom, bg-abyss)
+- 3 sample game entries
+
+**Webcomic Room:**
+- Content collection for webcomic pages organized by chapters
+- Schema: title, chapter, page number, date, image, thumbnail, transcript
+- Chapter-based listing with thumbnail grid
+- Comic reader with prev/next navigation
+- Click-based navigation on comic images (left/right thirds)
+- Transcript accordion for accessibility
+- Wisteria-tinted room vibe (bg-wisteria, bg-abyss, bg-orchid)
+- 2 sample webcomic pages
+
+**Photos Room:**
+- Content collection for photography
+- Schema: title, description, date, location, camera, image, tags, featured
+- Gallery grid with featured photos section
+- Individual photo pages with metadata (date, location, camera)
+- Ember-tinted room vibe (bg-ember, bg-spark, bg-deep)
+- 3 sample photo entries
+
+**Constellation Navigation:**
+- Expanded from 5 to 8 stars
+- New layout: Games (top-left), Home (top-center), Style Guide (top-right), Blog (mid-left), Gallery (mid-right), Webcomic (lower-left), Photos (lower-right), About (bottom-center)
+- Each star has its own color matching its room vibe
+- Updated constellation lines to connect all 8 rooms
+- Updated animation delays for staggered entrance
+
+**Room Vibes added to Layout:**
+| Room | Blob 1 | Blob 2 | Blob 3 |
+|------|--------|--------|--------|
+| Games | aurora | bloom | abyss |
+| Webcomic | wisteria | abyss | orchid |
+| Photos | ember | spark | deep |
+
+**Files created:**
+- `src/content/games/*.md` — 3 game entries (Echoes of the Void, Bioluminescent, Constellation Keeper)
+- `src/content/webcomic/*.md` — 2 comic pages (Chapter 1, pages 1-2)
+- `src/content/photos/*.md` — 3 photo entries (Midnight Tide, Forest Fog, Desert Stars)
+- `src/pages/games/index.astro` — Games listing
+- `src/pages/games/[slug].astro` — Individual game pages
+- `src/pages/webcomic/index.astro` — Comic chapter listing
+- `src/pages/webcomic/[slug].astro` — Comic reader
+- `src/pages/photos/index.astro` — Photo gallery
+- `src/pages/photos/[slug].astro` — Individual photo pages
+
+**Files modified:**
+- `src/content/config.ts` — Added games, webcomic, photos collections
+- `src/layouts/Layout.astro` — Added games, webcomic, photos room vibes
+- `src/components/ConstellationNav.astro` — Expanded to 8 stars with new positions
+- `src/components/ParticleField.astro` — Updated room positions for transition drift
+
+**Technical notes:**
+- Each room has unique accent colors in constellation (aurora for games, orchid for webcomic, ember for photos)
+- Webcomic reader supports keyboard navigation hints
+- Photos schema supports camera metadata for photography enthusiasts
+- Particle drift now works with all 8 room positions
+- **Astro 5.x schema fix:** The `image()` helper must be accessed via schema callback (`schema: ({ image }) => z.object({...})`) rather than imported from `astro:schema`
+
+---
+
+### Phase 11: Links Room
+
+Added a linktree-style Links room for external links, shop items, and social profiles.
+
+**What was built:**
+
+**Links Room:**
+- Content collection for external links with categories
+- Schema: title, description, url (required), category (shop/social/portfolio/support/other), icon, image, order, featured
+- Linktree-style single-page layout with category groupings
+- Featured links displayed prominently at top
+- Hover effects with warm coral/spark accents
+- All links open in new tabs
+- 6 sample link entries (shop, social, portfolio, support)
+
+**Constellation Navigation:**
+- Expanded from 8 to 9 stars
+- Links positioned at center (50%, 52%) as a connecting hub
+- Connected to Blog, Gallery, Webcomic, and Photos via constellation lines
+- Spark/coral colored star matching room vibe
+
+**Room Vibe:**
+| Room | Blob 1 | Blob 2 | Blob 3 |
+|------|--------|--------|--------|
+| Links | coral | spark | nebula |
+
+**Files created:**
+- `src/content/links/*.md` — 6 sample links (shop-prints, shop-commissions, social-bluesky, social-github, portfolio-itch, support-kofi)
+- `src/pages/links/index.astro` — Links listing page
+
+**Files modified:**
+- `src/content/config.ts` — Added links collection
+- `src/layouts/Layout.astro` — Added links room vibe
+- `src/components/ConstellationNav.astro` — Added 9th star for Links
+- `src/components/ParticleField.astro` — Added /links room position
+
+**Technical notes:**
+- Links room uses category-based grouping for organization
+- Featured links shown separately at top for emphasis
+- No individual [slug] pages needed — all links are external
+- Order field allows manual sorting within categories
+
+---
+
 ## Current Project State
 
 ### File Structure
 ```
+public/
+├── favicon.svg
+├── og-image.svg
+├── site.webmanifest
+└── BRANDING-ASSETS.md
+
 src/
+├── assets/
+│   └── gallery/
+│       └── README.md
 ├── components/
 │   ├── ui/
 │   │   ├── Badge.astro
@@ -244,6 +461,24 @@ src/
 │   │   ├── nebula-heart.md
 │   │   ├── stardust-memory.md
 │   │   └── the-waning-light.md
+│   ├── games/
+│   │   ├── bioluminescent.md
+│   │   ├── constellation-keeper.md
+│   │   └── echoes-of-the-void.md
+│   ├── photos/
+│   │   ├── desert-stars.md
+│   │   ├── forest-fog.md
+│   │   └── midnight-tide.md
+│   ├── webcomic/
+│   │   ├── chapter-1-page-1.md
+│   │   └── chapter-1-page-2.md
+│   ├── links/
+│   │   ├── shop-prints.md
+│   │   ├── shop-commissions.md
+│   │   ├── social-bluesky.md
+│   │   ├── social-github.md
+│   │   ├── portfolio-itch.md
+│   │   └── support-kofi.md
 │   └── config.ts
 ├── layouts/
 │   └── Layout.astro
@@ -254,6 +489,17 @@ src/
 │   ├── gallery/
 │   │   ├── index.astro
 │   │   └── [slug].astro
+│   ├── games/
+│   │   ├── index.astro
+│   │   └── [slug].astro
+│   ├── photos/
+│   │   ├── index.astro
+│   │   └── [slug].astro
+│   ├── webcomic/
+│   │   ├── index.astro
+│   │   └── [slug].astro
+│   ├── links/
+│   │   └── index.astro
 │   ├── about.astro
 │   ├── index.astro
 │   └── style-guide.astro
@@ -264,26 +510,32 @@ src/
 ### What's Working
 - [x] Breathing background with animated blobs
 - [x] Particle field with cursor interaction
-- [x] Constellation navigation with 5 rooms
+- [x] Constellation navigation with 9 rooms
 - [x] View Transitions between pages
-- [x] Room-specific color vibes
+- [x] Room-specific color vibes (9 rooms, each with unique palette)
 - [x] Component library (Button, Card, Link, GlowText, Input, Badge)
 - [x] Typography scale
 - [x] Style guide reference page
 - [x] Mobile responsive
 - [x] Accessibility (reduced motion, keyboard nav, ARIA)
-- [x] Content collections for blog and gallery
-- [x] Individual post/artwork pages with dynamic routing
+- [x] Content collections for blog, gallery, games, webcomic, photos, links
+- [x] Individual post/artwork/game/comic/photo pages with dynamic routing
 - [x] Prose styling for blog content
+- [x] Directional particle drift during room transitions
+- [x] Under construction banner
+- [x] Meta tags / SEO / Open Graph
+- [x] Favicon and branding assets (SVG + templates)
+- [x] Image optimization (Astro `<Image />` component)
+- [x] Games room with project showcase
+- [x] Webcomic room with chapter navigation and reader
+- [x] Photos room with photography gallery
+- [x] Links room (linktree-style external links directory)
 
 ### Not Yet Implemented
-- [ ] Additional rooms (Webcomic, Games, Photos, Shop/Links)
-- [ ] Directional particle drift during transitions
-- [ ] Meta tags / SEO / Open Graph
-- [ ] Favicon and branding assets
+- [ ] Generate PNG favicon variants from SVG
+- [ ] Generate og-image.png from SVG template
 - [ ] Contact form integration
 - [ ] Dark/light mode toggle (currently dark only)
-- [ ] Image optimization for gallery
 - [ ] RSS feed for blog
 
 ---
@@ -308,4 +560,4 @@ src/
 
 ---
 
-*Last updated: 2025-01-13*
+*Last updated: 2026-01-13*

@@ -1,0 +1,145 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+
+export async function getStaticPaths() {
+  const photos = await getCollection('photos');
+  return photos.map((photo) => ({
+    params: { slug: photo.slug },
+    props: { photo },
+  }));
+}
+
+interface Props {
+  photo: CollectionEntry<'photos'>;
+}
+
+const { photo } = Astro.props;
+const { Content } = await photo.render();
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<Layout
+  title={`${photo.data.title} | Photos | Cosmic Ocean`}
+  description={photo.data.description || `${photo.data.title} — Photography by José Angel`}
+  room="photos"
+>
+  <article class="min-h-screen px-6 py-24">
+    <div class="max-w-5xl mx-auto">
+      <!-- Back link -->
+      <nav class="mb-8">
+        <Button href="/photos" variant="ghost" size="sm">
+          ← Back to Photos
+        </Button>
+      </nav>
+
+      <!-- Photo Display -->
+      <div class="mb-12">
+        <div class="rounded-lg bg-surface border border-ember/20 overflow-hidden">
+          {photo.data.image ? (
+            <Image
+              src={photo.data.image}
+              alt={photo.data.title}
+              width={1400}
+              height={933}
+              class="w-full h-auto"
+              loading="eager"
+            />
+          ) : (
+            <div class="aspect-[3/2] flex items-center justify-center">
+              <span class="text-8xl text-ember/30 font-display font-light select-none">❋</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="max-w-2xl mx-auto">
+        <header class="mb-8">
+          <h1 class="text-3xl md:text-4xl font-display font-light text-text-primary mb-4">
+            <span class="glow-photo">{photo.data.title}</span>
+          </h1>
+
+          {photo.data.description && (
+            <p class="text-lg text-text-secondary leading-relaxed">
+              {photo.data.description}
+            </p>
+          )}
+        </header>
+
+        <!-- Metadata -->
+        <dl class="grid grid-cols-2 gap-4 mb-8 p-6 bg-surface/30 rounded-lg border border-ember/10">
+          <div>
+            <dt class="text-sm text-text-muted">Date</dt>
+            <dd class="text-text-secondary">{formatDate(photo.data.date)}</dd>
+          </div>
+          {photo.data.location && (
+            <div>
+              <dt class="text-sm text-text-muted">Location</dt>
+              <dd class="text-text-secondary">{photo.data.location}</dd>
+            </div>
+          )}
+          {photo.data.camera && (
+            <div>
+              <dt class="text-sm text-text-muted">Camera</dt>
+              <dd class="text-text-secondary">{photo.data.camera}</dd>
+            </div>
+          )}
+        </dl>
+
+        <!-- Tags -->
+        {photo.data.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mb-8">
+            {photo.data.tags.map((tag) => (
+              <Badge variant="outline">{tag}</Badge>
+            ))}
+          </div>
+        )}
+
+        <!-- Content (photographer notes) -->
+        {photo.body && (
+          <div class="prose-photo mb-12">
+            <Content />
+          </div>
+        )}
+
+        <!-- Footer -->
+        <footer class="pt-8 border-t border-ember/20">
+          <Button href="/photos" variant="secondary">
+            ← All Photos
+          </Button>
+        </footer>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .glow-photo {
+    text-shadow:
+      0 0 20px var(--color-ember),
+      0 0 40px var(--color-spark);
+  }
+</style>
+
+<style is:global>
+  .prose-photo {
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    line-height: 1.7;
+  }
+
+  .prose-photo p {
+    margin-bottom: 1.25rem;
+  }
+</style>

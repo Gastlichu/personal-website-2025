@@ -1,6 +1,15 @@
 @import "tailwindcss";
 
 /* ============================================
+   BASE STYLES
+   ============================================ */
+
+/* Prevent overscroll bounce on iOS/macOS */
+html, body {
+  overscroll-behavior: none;
+}
+
+/* ============================================
    COSMIC OCEAN COMPONENT UTILITIES
    ============================================ */
 
