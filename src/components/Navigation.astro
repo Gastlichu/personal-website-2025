@@ -1,101 +1,86 @@
 ---
 /**
- * Navigation - Dual-mode navigation with traditional menu and constellation view
- * Default: Kebab menu. Toggle to constellation mode available.
+ * Navigation - Dual navigation with hamburger menu and constellation view
+ * Each button opens its own menu. Opening one closes the other.
  */
 ---
 
-<!-- Nav Toggle Button -->
+<!-- Hamburger Menu Button -->
 <button
-  id="nav-toggle"
-  class="fixed top-16 right-6 z-50 w-12 h-12 rounded-full bg-surface/80 border border-orchid/30 flex items-center justify-center transition-all duration-300 hover:border-orchid hover:shadow-[0_0_20px_rgba(144,72,160,0.3)] group"
-  aria-label="Toggle navigation"
+  id="hamburger-toggle"
+  class="fixed top-14 right-6 z-50 w-14 h-14 rounded-full bg-surface/80 backdrop-blur-sm border border-orchid/30 flex items-center justify-center transition-all duration-300 hover:border-orchid hover:shadow-[0_0_20px_rgba(144,72,160,0.3)] group"
+  aria-label="Open menu"
   aria-expanded="false"
-  transition:persist="nav-toggle"
+  aria-controls="hamburger-nav"
+  transition:persist="hamburger-toggle"
 >
-  <!-- Kebab icon (default) -->
-  <svg id="kebab-icon" class="w-5 h-5 text-text-primary transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
-    <circle cx="12" cy="5" r="2" />
-    <circle cx="12" cy="12" r="2" />
-    <circle cx="12" cy="19" r="2" />
-  </svg>
-  <!-- Constellation icon (when in constellation mode) -->
-  <svg id="constellation-icon" class="w-5 h-5 text-text-primary transition-transform duration-300 group-hover:scale-110 hidden" viewBox="0 0 24 24" fill="currentColor">
-    <circle cx="12" cy="6" r="2" />
-    <circle cx="6" cy="16" r="2" />
-    <circle cx="18" cy="16" r="2" />
-    <line x1="12" y1="6" x2="6" y2="16" stroke="currentColor" stroke-width="1" opacity="0.5" />
-    <line x1="12" y1="6" x2="18" y2="16" stroke="currentColor" stroke-width="1" opacity="0.5" />
-    <line x1="6" y1="16" x2="18" y2="16" stroke="currentColor" stroke-width="1" opacity="0.5" />
-  </svg>
-</button>
-
-<!-- Mode Toggle Button -->
-<button
-  id="nav-mode-toggle"
-  class="fixed top-16 right-20 z-50 w-10 h-10 rounded-full bg-surface/60 border border-orchid/20 flex items-center justify-center transition-all duration-300 hover:border-orchid/50 hover:bg-surface/80 group"
-  aria-label="Switch navigation mode"
-  title="Switch to constellation view"
-  transition:persist="nav-mode-toggle"
->
-  <!-- Star icon to switch to constellation -->
-  <svg id="mode-to-constellation" class="w-4 h-4 text-text-muted transition-all duration-300 group-hover:text-orchid group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2L14.09 8.26L21 9.27L16 14.14L17.18 21.02L12 17.77L6.82 21.02L8 14.14L3 9.27L9.91 8.26L12 2Z" />
-  </svg>
-  <!-- Menu icon to switch to kebab -->
-  <svg id="mode-to-kebab" class="w-4 h-4 text-text-muted transition-all duration-300 group-hover:text-orchid group-hover:scale-110 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <svg class="w-6 h-6 text-text-primary transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
     <line x1="4" y1="6" x2="20" y2="6" />
     <line x1="4" y1="12" x2="20" y2="12" />
     <line x1="4" y1="18" x2="20" y2="18" />
   </svg>
 </button>
 
-<!-- Kebab Menu Dropdown -->
+<!-- Constellation Menu Button -->
+<button
+  id="constellation-toggle"
+  class="fixed top-14 right-[5.5rem] z-50 w-12 h-12 rounded-full bg-surface/60 backdrop-blur-sm border border-orchid/20 flex items-center justify-center transition-all duration-300 hover:border-stardust/50 hover:bg-surface/80 hover:shadow-[0_0_15px_rgba(248,176,216,0.3)] group"
+  aria-label="Open constellation navigation"
+  aria-expanded="false"
+  aria-controls="constellation-nav"
+  transition:persist="constellation-toggle"
+>
+  <svg class="w-5 h-5 text-text-muted transition-all duration-300 group-hover:text-stardust group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2L14.09 8.26L21 9.27L16 14.14L17.18 21.02L12 17.77L6.82 21.02L8 14.14L3 9.27L9.91 8.26L12 2Z" />
+  </svg>
+</button>
+
+<!-- Hamburger Menu Dropdown -->
 <nav
-  id="kebab-nav"
-  class="fixed top-28 right-6 z-40 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2"
+  id="hamburger-nav"
+  class="fixed top-32 right-6 z-40 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2"
   aria-label="Site navigation"
-  transition:persist="kebab-nav"
+  transition:persist="hamburger-nav"
 >
   <div class="bg-surface/95 border border-orchid/30 rounded-xl shadow-xl shadow-void/50 overflow-hidden min-w-48">
     <ul class="py-2">
       <li>
-        <a href="/" data-path="/" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+        <a href="/" data-path="/" class="nav-item block px-5 py-3.5 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body text-lg">
           Home
         </a>
       </li>
       <li>
-        <a href="/blog" data-path="/blog" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+        <a href="/blog" data-path="/blog" class="nav-item block px-5 py-3.5 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body text-lg">
           Blog
         </a>
       </li>
       <li>
-        <a href="/gallery" data-path="/gallery" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+        <a href="/gallery" data-path="/gallery" class="nav-item block px-5 py-3.5 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body text-lg">
           Gallery
         </a>
       </li>
       <li>
-        <a href="/games" data-path="/games" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+        <a href="/games" data-path="/games" class="nav-item block px-5 py-3.5 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body text-lg">
           Games
         </a>
       </li>
       <li>
-        <a href="/webcomic" data-path="/webcomic" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+        <a href="/webcomic" data-path="/webcomic" class="nav-item block px-5 py-3.5 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body text-lg">
           Webcomic
         </a>
       </li>
       <li>
-        <a href="/photos" data-path="/photos" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+        <a href="/photos" data-path="/photos" class="nav-item block px-5 py-3.5 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body text-lg">
           Photos
         </a>
       </li>
       <li>
-        <a href="/links" data-path="/links" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+        <a href="/links" data-path="/links" class="nav-item block px-5 py-3.5 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body text-lg">
           Links
         </a>
       </li>
       <li>
-        <a href="/about" data-path="/about" class="nav-item block px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body">
+        <a href="/about" data-path="/about" class="nav-item block px-5 py-3.5 text-text-secondary hover:text-text-primary hover:bg-orchid/10 transition-colors font-body text-lg">
           About
         </a>
       </li>
@@ -206,56 +191,56 @@
     <a href="/games" data-path="/games" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 15%; top: 28%;">
       <span class="star-glow absolute w-5 h-5 rounded-full bg-aurora/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-aurora/30"></span>
       <span class="star-core relative w-5 h-5 rounded-full bg-aurora transition-all duration-300 group-hover:bg-bloom group-hover:shadow-[0_0_15px_#56e8c9]"></span>
-      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Games</span>
+      <span class="star-label font-display text-base tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Games</span>
     </a>
 
     <!-- Home - top center (primary star) -->
     <a href="/" data-path="/" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 50%; top: 22%;">
       <span class="star-glow absolute w-7 h-7 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
       <span class="star-core relative w-7 h-7 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
-      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Home</span>
+      <span class="star-label font-display text-base tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Home</span>
     </a>
 
     <!-- Blog - mid left -->
     <a href="/blog" data-path="/blog" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 24%; top: 42%;">
       <span class="star-glow absolute w-5 h-5 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
       <span class="star-core relative w-5 h-5 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
-      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Blog</span>
+      <span class="star-label font-display text-base tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Blog</span>
     </a>
 
     <!-- Gallery - mid right -->
     <a href="/gallery" data-path="/gallery" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 76%; top: 42%;">
       <span class="star-glow absolute w-5 h-5 rounded-full bg-coral/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-coral/30"></span>
       <span class="star-core relative w-5 h-5 rounded-full bg-coral transition-all duration-300 group-hover:bg-spark group-hover:shadow-[0_0_15px_#f08070]"></span>
-      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Gallery</span>
+      <span class="star-label font-display text-base tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Gallery</span>
     </a>
 
     <!-- Links - center hub -->
     <a href="/links" data-path="/links" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 50%; top: 52%;">
       <span class="star-glow absolute w-5 h-5 rounded-full bg-coral/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-spark/30"></span>
       <span class="star-core relative w-5 h-5 rounded-full bg-spark transition-all duration-300 group-hover:bg-coral group-hover:shadow-[0_0_15px_#f0d090]"></span>
-      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Links</span>
+      <span class="star-label font-display text-base tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Links</span>
     </a>
 
     <!-- Webcomic - lower left -->
     <a href="/webcomic" data-path="/webcomic" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 32%; top: 62%;">
       <span class="star-glow absolute w-5 h-5 rounded-full bg-orchid/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-orchid/30"></span>
       <span class="star-core relative w-5 h-5 rounded-full bg-orchid transition-all duration-300 group-hover:bg-wisteria group-hover:shadow-[0_0_15px_#d078c8]"></span>
-      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Webcomic</span>
+      <span class="star-label font-display text-base tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Webcomic</span>
     </a>
 
     <!-- Photos - lower right -->
     <a href="/photos" data-path="/photos" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 68%; top: 62%;">
       <span class="star-glow absolute w-5 h-5 rounded-full bg-ember/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-ember/30"></span>
       <span class="star-core relative w-5 h-5 rounded-full bg-ember transition-all duration-300 group-hover:bg-spark group-hover:shadow-[0_0_15px_#d4a574]"></span>
-      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Photos</span>
+      <span class="star-label font-display text-base tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">Photos</span>
     </a>
 
     <!-- About - bottom center -->
     <a href="/about" data-path="/about" class="star-link absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 group transition-all duration-300" style="left: 50%; top: 78%;">
       <span class="star-glow absolute w-5 h-5 rounded-full bg-bloom/20 blur-md scale-100 transition-all duration-500 group-hover:scale-150 group-hover:bg-stardust/30"></span>
       <span class="star-core relative w-5 h-5 rounded-full bg-stardust transition-all duration-300 group-hover:bg-flare group-hover:shadow-[0_0_15px_#f8b0d8]"></span>
-      <span class="star-label font-display text-sm tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">About</span>
+      <span class="star-label font-display text-base tracking-wider transition-all duration-300 whitespace-nowrap text-text-secondary group-hover:text-text-primary">About</span>
     </a>
   </div>
 
@@ -284,15 +269,15 @@
   </button>
 
   <!-- Close hint -->
-  <p class="absolute bottom-8 left-1/2 -translate-x-1/2 text-text-muted text-sm font-body">
-    <span class="hidden sm:inline">Click a star or press <kbd class="px-2 py-0.5 rounded bg-surface/50 text-text-secondary text-xs">Esc</kbd> to close</span>
+  <p class="absolute bottom-8 left-1/2 -translate-x-1/2 text-text-muted text-base font-body">
+    <span class="hidden sm:inline">Click a star or press <kbd class="px-2 py-1 rounded bg-surface/50 text-text-secondary text-sm">Esc</kbd> to close</span>
     <span class="sm:hidden">Tap a star or tap outside to close</span>
   </p>
 </nav>
 
 <style>
   /* Kebab menu open state */
-  #kebab-nav.is-open {
+  #hamburger-nav.is-open {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
@@ -503,7 +488,7 @@
   }
 
   /* Twilight kebab menu - soft lavender */
-  [data-theme="twilight"] #kebab-nav > div {
+  [data-theme="twilight"] #hamburger-nav > div {
     background: rgba(240, 236, 248, 0.98);
     border-color: rgba(168, 144, 184, 0.3);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
@@ -665,42 +650,20 @@
 
   // Initialize navigation functionality
   function initNavigation() {
-    const toggle = document.getElementById('nav-toggle');
-    const modeToggle = document.getElementById('nav-mode-toggle');
-    const kebabNav = document.getElementById('kebab-nav');
+    const hamburgerToggle = document.getElementById('hamburger-toggle');
+    const constellationToggle = document.getElementById('constellation-toggle');
+    const hamburgerNav = document.getElementById('hamburger-nav');
     const constellationNav = document.getElementById('constellation-nav');
-    const kebabIcon = document.getElementById('kebab-icon');
-    const constellationIcon = document.getElementById('constellation-icon');
-    const modeToConstellation = document.getElementById('mode-to-constellation');
-    const modeToKebab = document.getElementById('mode-to-kebab');
 
-    if (!toggle || !kebabNav || !constellationNav || toggle.dataset.initialized) return;
-    toggle.dataset.initialized = 'true';
-
-    // Get saved mode or default to 'kebab'
-    let navMode = localStorage.getItem('navMode') || 'kebab';
-
-    function updateModeUI() {
-      if (navMode === 'constellation') {
-        kebabIcon.classList.add('hidden');
-        constellationIcon.classList.remove('hidden');
-        modeToConstellation.classList.add('hidden');
-        modeToKebab.classList.remove('hidden');
-        modeToggle.title = 'Switch to menu view';
-      } else {
-        kebabIcon.classList.remove('hidden');
-        constellationIcon.classList.add('hidden');
-        modeToConstellation.classList.remove('hidden');
-        modeToKebab.classList.add('hidden');
-        modeToggle.title = 'Switch to constellation view';
-      }
-    }
+    if (!hamburgerToggle || !constellationToggle || !hamburgerNav || !constellationNav) return;
+    if (hamburgerToggle.dataset.initialized) return;
+    hamburgerToggle.dataset.initialized = 'true';
 
     function updateActiveState() {
       const currentPath = window.location.pathname;
 
-      // Update kebab menu
-      kebabNav.querySelectorAll('.nav-item').forEach(link => {
+      // Update hamburger menu
+      hamburgerNav.querySelectorAll('.nav-item').forEach(link => {
         const linkPath = link.getAttribute('data-path');
         const isActive = currentPath === linkPath ||
                         currentPath === linkPath + '/' ||
@@ -726,43 +689,52 @@
     }
 
     function closeAll() {
-      kebabNav.classList.remove('is-open');
+      hamburgerNav.classList.remove('is-open');
       constellationNav.classList.remove('is-open');
-      toggle.setAttribute('aria-expanded', 'false');
+      hamburgerToggle.setAttribute('aria-expanded', 'false');
+      constellationToggle.setAttribute('aria-expanded', 'false');
     }
 
-    function openNav() {
-      if (navMode === 'constellation') {
+    function toggleHamburger() {
+      const isHamburgerOpen = hamburgerNav.classList.contains('is-open');
+
+      // Close constellation if open
+      constellationNav.classList.remove('is-open');
+      constellationToggle.setAttribute('aria-expanded', 'false');
+
+      // Toggle hamburger
+      if (isHamburgerOpen) {
+        hamburgerNav.classList.remove('is-open');
+        hamburgerToggle.setAttribute('aria-expanded', 'false');
+      } else {
+        hamburgerNav.classList.add('is-open');
+        hamburgerToggle.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    function toggleConstellation() {
+      const isConstellationOpen = constellationNav.classList.contains('is-open');
+
+      // Close hamburger if open
+      hamburgerNav.classList.remove('is-open');
+      hamburgerToggle.setAttribute('aria-expanded', 'false');
+
+      // Toggle constellation
+      if (isConstellationOpen) {
+        constellationNav.classList.remove('is-open');
+        constellationToggle.setAttribute('aria-expanded', 'false');
+      } else {
         constellationNav.classList.add('is-open');
-      } else {
-        kebabNav.classList.add('is-open');
+        constellationToggle.setAttribute('aria-expanded', 'true');
       }
-      toggle.setAttribute('aria-expanded', 'true');
-    }
-
-    function toggleNav() {
-      const isOpen = kebabNav.classList.contains('is-open') || constellationNav.classList.contains('is-open');
-      if (isOpen) {
-        closeAll();
-      } else {
-        openNav();
-      }
-    }
-
-    function switchMode() {
-      closeAll();
-      navMode = navMode === 'kebab' ? 'constellation' : 'kebab';
-      localStorage.setItem('navMode', navMode);
-      updateModeUI();
     }
 
     // Initialize
-    updateModeUI();
     updateActiveState();
 
     // Event listeners
-    toggle.addEventListener('click', toggleNav);
-    modeToggle.addEventListener('click', switchMode);
+    hamburgerToggle.addEventListener('click', toggleHamburger);
+    constellationToggle.addEventListener('click', toggleConstellation);
 
     // Close on backdrop click (constellation)
     constellationNav.addEventListener('click', (e) => {
@@ -771,12 +743,12 @@
       }
     });
 
-    // Close kebab on click outside
+    // Close hamburger on click outside
     document.addEventListener('click', (e) => {
-      if (kebabNav.classList.contains('is-open') &&
-          !kebabNav.contains(e.target) &&
-          !toggle.contains(e.target) &&
-          !modeToggle.contains(e.target)) {
+      if (hamburgerNav.classList.contains('is-open') &&
+          !hamburgerNav.contains(e.target) &&
+          !hamburgerToggle.contains(e.target) &&
+          !constellationToggle.contains(e.target)) {
         closeAll();
       }
     });
@@ -784,10 +756,10 @@
     // Close on Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        const isOpen = kebabNav.classList.contains('is-open') || constellationNav.classList.contains('is-open');
+        const isOpen = hamburgerNav.classList.contains('is-open') || constellationNav.classList.contains('is-open');
         if (isOpen) {
           closeAll();
-          toggle.focus();
+          hamburgerToggle.focus();
         }
       }
     });

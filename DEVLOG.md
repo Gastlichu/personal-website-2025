@@ -676,6 +676,60 @@ Major polish session adding dark/light mode, fixing navigation bugs, and complet
 
 ---
 
+### Phase 16: Navigation UX & Typography Improvements
+
+Refined navigation behavior and improved readability across the site.
+
+**What was built:**
+
+**Navigation Button Improvements:**
+- Main toggle button enlarged: 48px → **56px** (`w-14 h-14`)
+- Mode toggle button enlarged: 40px → **48px** (`w-12 h-12`)
+- Changed kebab (vertical dots) to **hamburger** (horizontal lines) icon
+- Added `backdrop-blur-sm` for depth
+- Better hover states with stardust glow on star button
+
+**Dual Menu Behavior (Breaking Change):**
+- Removed "mode switching" concept entirely
+- Now two separate buttons that each open their own menu:
+  - **☰ Hamburger button** → Opens dropdown menu
+  - **★ Star button** → Opens constellation overlay
+- **Mutual exclusivity:** Opening one menu automatically closes the other
+- No more localStorage for nav mode — simpler mental model
+
+**Typography Scale Increase:**
+| Element | Before | After |
+|---------|--------|-------|
+| Display | 48px (3rem) | **56px (3.5rem)** |
+| H1 | 36px (2.25rem) | **40px (2.5rem)** |
+| H2 | 28px (1.75rem) | **32px (2rem)** |
+| H3 | 20px (1.25rem) | **24px (1.5rem)** |
+| Body | 16px (1rem) | **18px (1.125rem)** |
+| Small | 14px (0.875rem) | **16px (1rem)** |
+| Micro | 12px (0.75rem) | **14px (0.875rem)** |
+
+- Constellation star labels: `text-sm` → `text-base`
+- Menu items: Added `text-lg` and increased padding
+- Close hint text: `text-sm` → `text-base`
+- Improved line heights for better readability
+
+**Loading Overlay Timing:**
+- Threshold lowered: 150ms → **30ms**
+- Now shows on almost all transitions for consistent feel across devices
+- Previously only visible on mobile (slower connections)
+
+**Files modified:**
+- `src/components/Navigation.astro` — New dual-button behavior, larger buttons, hamburger icon, updated JavaScript
+- `src/styles/global.css` — Increased typography scale
+- `src/layouts/Layout.astro` — Lowered overlay threshold
+
+**Technical notes:**
+- Removed `navMode` localStorage — no longer needed
+- Each button has its own toggle function that closes the other menu first
+- Simplified ARIA: each button controls its own menu via `aria-controls`
+
+---
+
 ## Current Project State
 
 ### File Structure
@@ -806,6 +860,9 @@ src/
 - [x] Room color transitions fixed (blob colors update during navigation)
 - [x] Theme persistence across View Transitions
 - [x] Mobile-friendly close hint in constellation menu
+- [x] Dual-button navigation (hamburger + constellation, mutually exclusive)
+- [x] Larger, more readable typography scale
+- [x] Consistent loading overlay across devices
 
 ### Not Yet Implemented
 - [ ] Contact form integration
@@ -839,4 +896,4 @@ src/
 
 ---
 
-*Last updated: 2026-01-14 (Phase 15)*
+*Last updated: 2026-01-16 (Phase 16)*

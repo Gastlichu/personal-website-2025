@@ -141,7 +141,7 @@ const colors = roomColors[room];
         overlay.dataset.initialized = 'true';
 
         let showTimer = null;
-        const SHOW_DELAY = 150; // Only show overlay if transition takes longer than this
+        const SHOW_DELAY = 30; // Show overlay quickly for consistent transition feel
 
         // Start timer when navigation begins
         document.addEventListener('astro:before-preparation', () => {
