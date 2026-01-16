@@ -102,7 +102,7 @@ const colors = roomColors[room];
 
     <ViewTransitions />
   </head>
-  <body class="bg-void text-text-primary min-h-screen font-body overflow-x-hidden">
+  <body class="bg-void text-text-primary font-body">
     <!-- Breathing Background (Layer 1) -->
     <div id="breathing-bg" class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true" transition:persist="bg">
       <div id="blob-1" class:list={["breathing-blob blob-1 absolute w-[600px] h-[600px] rounded-full opacity-45 blur-[100px] transition-colors duration-300", colors.blob1]}></div>
