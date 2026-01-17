@@ -74,7 +74,7 @@ const webcomic = defineCollection({
 
 /**
  * Photos Collection
- * Photography work
+ * Photography work - supports single photos or albums with multiple images
  */
 const photos = defineCollection({
   type: 'content',
@@ -84,7 +84,10 @@ const photos = defineCollection({
     date: z.coerce.date(),
     location: z.string().optional(),
     camera: z.string().optional(),
+    // Single image (for standalone photos)
     image: image().optional(),
+    // Multiple images (for albums/galleries)
+    images: z.array(image()).optional(),
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
   }),

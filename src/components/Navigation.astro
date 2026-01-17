@@ -12,7 +12,6 @@
   aria-label="Open menu"
   aria-expanded="false"
   aria-controls="hamburger-nav"
-  transition:persist="hamburger-toggle"
 >
   <svg class="w-6 h-6 text-text-primary transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
     <line x1="4" y1="6" x2="20" y2="6" />
@@ -28,7 +27,6 @@
   aria-label="Open constellation navigation"
   aria-expanded="false"
   aria-controls="constellation-nav"
-  transition:persist="constellation-toggle"
 >
   <svg class="w-5 h-5 text-text-muted transition-all duration-300 group-hover:text-stardust group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2L14.09 8.26L21 9.27L16 14.14L17.18 21.02L12 17.77L6.82 21.02L8 14.14L3 9.27L9.91 8.26L12 2Z" />
@@ -40,7 +38,6 @@
   id="hamburger-nav"
   class="fixed top-32 right-6 z-40 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2"
   aria-label="Site navigation"
-  transition:persist="hamburger-nav"
 >
   <div class="bg-surface/95 border border-orchid/30 rounded-xl shadow-xl shadow-void/50 overflow-hidden min-w-48">
     <ul class="py-2">
@@ -110,7 +107,6 @@
   id="constellation-nav"
   class="fixed inset-0 z-40 opacity-0 pointer-events-none transition-opacity duration-500"
   aria-label="Site navigation"
-  transition:persist="constellation-nav"
 >
   <!-- Backdrop -->
   <div class="nav-backdrop absolute inset-0 bg-void/95"></div>
@@ -656,8 +652,10 @@
     const constellationNav = document.getElementById('constellation-nav');
 
     if (!hamburgerToggle || !constellationToggle || !hamburgerNav || !constellationNav) return;
-    if (hamburgerToggle.dataset.initialized) return;
-    hamburgerToggle.dataset.initialized = 'true';
+
+    // Skip if already initialized on this exact element instance
+    if (hamburgerToggle._navInitialized) return;
+    hamburgerToggle._navInitialized = true;
 
     function updateActiveState() {
       const currentPath = window.location.pathname;

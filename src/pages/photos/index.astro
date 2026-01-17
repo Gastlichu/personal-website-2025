@@ -34,7 +34,7 @@ const regular = photos.filter(p => !p.data.featured);
       {featured.length > 0 && (
         <section class="mb-16">
           <h2 class="text-h3 text-text-secondary mb-6">Featured</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-children">
             {featured.map((photo) => (
               <a href={`/photos/${photo.slug}`} class="block group">
                 <article class="photo-card relative rounded-lg bg-surface/50 border border-ember/30 overflow-hidden transition-all duration-300 hover:border-ember/60 hover:shadow-[0_0_30px_rgba(212,165,116,0.15)]">
@@ -53,6 +53,9 @@ const regular = photos.filter(p => !p.data.featured);
                     )}
                   </div>
                   <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-void/95 via-void/70 to-transparent">
+                    {photo.data.images && photo.data.images.length > 0 && (
+                      <Badge variant="warm" class="mb-2">{photo.data.images.length} Photos</Badge>
+                    )}
                     <h3 class="font-display text-lg text-text-primary group-hover:text-ember transition-colors">
                       {photo.data.title}
                     </h3>
@@ -72,7 +75,7 @@ const regular = photos.filter(p => !p.data.featured);
         {featured.length > 0 && regular.length > 0 && (
           <h2 class="text-h3 text-text-secondary mb-6">All Photos</h2>
         )}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 content-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 content-auto stagger-children">
           {regular.map((photo) => (
             <a href={`/photos/${photo.slug}`} class="block group">
               <article class="photo-card relative rounded-lg bg-surface/50 border border-ember/20 overflow-hidden transition-all duration-300 hover:border-ember/50">
@@ -91,6 +94,9 @@ const regular = photos.filter(p => !p.data.featured);
                   )}
                 </div>
                 <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-void/90 via-void/60 to-transparent">
+                  {photo.data.images && photo.data.images.length > 0 && (
+                    <Badge variant="warm" class="mb-2 text-xs">{photo.data.images.length} Photos</Badge>
+                  )}
                   <h3 class="font-display text-text-primary group-hover:text-ember transition-colors">
                     {photo.data.title}
                   </h3>

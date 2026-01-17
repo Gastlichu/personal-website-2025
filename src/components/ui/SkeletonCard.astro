@@ -1,0 +1,61 @@
+---
+/**
+ * SkeletonCard - Loading placeholder for card content
+ * Mimics the structure of a typical blog/content card
+ */
+
+import Skeleton from './Skeleton.astro';
+
+interface Props {
+  /** Show image placeholder */
+  hasImage?: boolean;
+  /** Number of text lines to show */
+  lines?: number;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  hasImage = false,
+  lines = 3,
+  class: className = '',
+} = Astro.props;
+---
+
+<div class:list={['skeleton-card', className]}>
+  {hasImage && (
+    <Skeleton width="100%" height="12rem" rounded="lg" class="mb-4" />
+  )}
+
+  <!-- Title -->
+  <Skeleton width="70%" height="1.5rem" rounded="md" class="mb-3" />
+
+  <!-- Date/meta -->
+  <Skeleton width="30%" height="0.875rem" rounded="sm" class="mb-4" />
+
+  <!-- Content lines -->
+  <div class="space-y-2">
+    {Array.from({ length: lines }).map((_, i) => (
+      <Skeleton
+        width={i === lines - 1 ? '60%' : '100%'}
+        height="1rem"
+        rounded="sm"
+      />
+    ))}
+  </div>
+
+  <!-- Tags -->
+  <div class="flex gap-2 mt-4">
+    <Skeleton width="4rem" height="1.5rem" rounded="full" />
+    <Skeleton width="5rem" height="1.5rem" rounded="full" />
+  </div>
+</div>
+
+<style>
+  .skeleton-card {
+    padding: 1.5rem;
+    background: var(--color-surface);
+    border: 1px solid rgba(144, 72, 160, 0.2);
+    border-radius: 0.5rem;
+  }
+</style>

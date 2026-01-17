@@ -34,7 +34,7 @@ const regular = artworks.filter(a => !a.data.featured);
       {featured.length > 0 && (
         <section class="mb-16">
           <h2 class="text-h3 text-text-secondary mb-6">Featured</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-children">
             {featured.map((art) => (
               <a href={`/gallery/${art.slug}`} class="block group">
                 <article class="gallery-card relative rounded-lg bg-surface/50 border border-coral/30 overflow-hidden transition-all duration-300 hover:border-coral/60 hover:shadow-[0_0_30px_rgba(168,104,120,0.2)]">
@@ -73,7 +73,7 @@ const regular = artworks.filter(a => !a.data.featured);
         {featured.length > 0 && (
           <h2 class="text-h3 text-text-secondary mb-6">All Works</h2>
         )}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 content-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 content-auto stagger-children">
           {regular.map((art) => (
             <a href={`/gallery/${art.slug}`} class="block group">
               <article class="gallery-card relative rounded-lg bg-surface/50 border border-coral/20 overflow-hidden transition-all duration-300 hover:border-coral/50">

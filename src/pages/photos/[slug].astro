@@ -1,6 +1,6 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Badge from '../../components/ui/Badge.astro';
 import Button from '../../components/ui/Button.astro';
@@ -20,6 +20,21 @@ interface Props {
 const { photo } = Astro.props;
 const { Content } = await photo.render();
 
+// Check if this is an album (has multiple images)
+const isAlbum = photo.data.images && photo.data.images.length > 0;
+const imageCount = isAlbum ? photo.data.images!.length : (photo.data.image ? 1 : 0);
+
+// Generate optimized URLs for lightbox (larger size for carousel)
+let lightboxImages: { src: string; width: number; height: number }[] = [];
+if (isAlbum && photo.data.images) {
+  lightboxImages = await Promise.all(
+    photo.data.images.map(async (img) => {
+      const optimized = await getImage({ src: img, width: 1600, format: 'webp' });
+      return { src: optimized.src, width: optimized.attributes.width as number, height: optimized.attributes.height as number };
+    })
+  );
+}
+
 function formatDate(date: Date): string {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -35,7 +50,7 @@ function formatDate(date: Date): string {
   room="photos"
 >
   <article class="min-h-screen px-6 py-24">
-    <div class="max-w-5xl mx-auto">
+    <div class={isAlbum ? "max-w-6xl mx-auto" : "max-w-5xl mx-auto"}>
       <!-- Back link -->
       <nav class="mb-8">
         <Button href="/photos" variant="ghost" size="sm">
@@ -43,92 +58,442 @@ function formatDate(date: Date): string {
         </Button>
       </nav>
 
-      <!-- Photo Display -->
-      <div class="mb-12">
-        <div class="rounded-lg bg-surface border border-ember/20 overflow-hidden">
-          {photo.data.image ? (
-            <Image
-              src={photo.data.image}
-              alt={photo.data.title}
-              width={1400}
-              height={933}
-              class="w-full h-auto"
-              loading="eager"
-            />
-          ) : (
-            <div class="aspect-[3/2] flex items-center justify-center">
-              <span class="text-8xl text-ember/30 font-display font-light select-none">❋</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <!-- Info -->
-      <div class="max-w-2xl mx-auto text-readable">
-        <header class="mb-8">
-          <h1 class="text-3xl md:text-4xl font-display font-light text-text-primary mb-4">
-            <span class="glow-photo">{photo.data.title}</span>
-          </h1>
-
-          {photo.data.description && (
-            <p class="text-lg text-text-secondary leading-relaxed">
-              {photo.data.description}
+      {isAlbum ? (
+        <!-- ==================== ALBUM VIEW ==================== -->
+        <Fragment>
+          <!-- Album Header -->
+          <header class="mb-12 text-center text-readable">
+            <h1 class="text-3xl md:text-4xl font-display font-light text-text-primary mb-4">
+              <span class="glow-photo">{photo.data.title}</span>
+            </h1>
+            {photo.data.description && (
+              <p class="text-lg text-text-secondary leading-relaxed max-w-2xl mx-auto mb-4">
+                {photo.data.description}
+              </p>
+            )}
+            <p class="text-text-muted text-sm">
+              {imageCount} photos · {photo.data.location} · {formatDate(photo.data.date)}
             </p>
-          )}
-        </header>
+            <p class="text-text-muted text-xs mt-2">Click any photo to view in carousel</p>
+          </header>
 
-        <!-- Metadata -->
-        <dl class="grid grid-cols-2 gap-4 mb-8 p-6 bg-surface/30 rounded-lg border border-ember/10">
-          <div>
-            <dt class="text-sm text-text-muted">Date</dt>
-            <dd class="text-text-secondary">{formatDate(photo.data.date)}</dd>
-          </div>
-          {photo.data.location && (
-            <div>
-              <dt class="text-sm text-text-muted">Location</dt>
-              <dd class="text-text-secondary">{photo.data.location}</dd>
-            </div>
-          )}
-          {photo.data.camera && (
-            <div>
-              <dt class="text-sm text-text-muted">Camera</dt>
-              <dd class="text-text-secondary">{photo.data.camera}</dd>
-            </div>
-          )}
-        </dl>
-
-        <!-- Tags -->
-        {photo.data.tags.length > 0 && (
-          <div class="flex flex-wrap gap-2 mb-8">
-            {photo.data.tags.map((tag) => (
-              <Badge variant="outline">{tag}</Badge>
+          <!-- Album Gallery Grid -->
+          <div id="album-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12 stagger-children">
+            {photo.data.images!.map((img, index) => (
+              <button
+                type="button"
+                class="album-image group relative rounded-lg overflow-hidden bg-surface border border-ember/20 hover:border-ember/50 transition-all duration-300 cursor-pointer text-left"
+                data-index={index}
+                aria-label={`View photo ${index + 1} of ${imageCount}`}
+              >
+                <Image
+                  src={img}
+                  alt={`${photo.data.title} - Photo ${index + 1}`}
+                  width={600}
+                  height={450}
+                  class="w-full h-auto aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading={index < 6 ? "eager" : "lazy"}
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-void/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                <span class="absolute bottom-2 right-2 text-xs text-text-muted/60 opacity-0 group-hover:opacity-100 transition-opacity">{index + 1}/{imageCount}</span>
+              </button>
             ))}
           </div>
-        )}
 
-        <!-- Content (photographer notes) -->
-        {photo.body && (
-          <div class="prose-photo mb-12">
-            <Content />
+          <!-- Lightbox Carousel -->
+          <div
+            id="lightbox"
+            class="lightbox fixed inset-0 z-50 bg-void/98 opacity-0 pointer-events-none transition-opacity duration-300"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Photo carousel"
+          >
+            <!-- Close button -->
+            <button
+              id="lightbox-close"
+              class="absolute top-4 right-4 z-10 w-12 h-12 rounded-full bg-surface/80 border border-ember/30 flex items-center justify-center text-text-primary hover:bg-surface hover:border-ember transition-all"
+              aria-label="Close carousel"
+            >
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+
+            <!-- Counter -->
+            <div id="lightbox-counter" class="absolute top-4 left-4 text-text-muted text-sm font-mono">
+              1 / {imageCount}
+            </div>
+
+            <!-- Navigation arrows -->
+            <button
+              id="lightbox-prev"
+              class="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-surface/80 border border-ember/30 flex items-center justify-center text-text-primary hover:bg-surface hover:border-ember transition-all"
+              aria-label="Previous photo"
+            >
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+
+            <button
+              id="lightbox-next"
+              class="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-surface/80 border border-ember/30 flex items-center justify-center text-text-primary hover:bg-surface hover:border-ember transition-all"
+              aria-label="Next photo"
+            >
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+
+            <!-- Image container -->
+            <div id="lightbox-image-container" class="absolute inset-0 flex items-center justify-center p-16 sm:p-20">
+              <img
+                id="lightbox-image"
+                src=""
+                alt=""
+                class="max-w-full max-h-full object-contain cursor-zoom-in transition-transform duration-300"
+              />
+            </div>
+
+            <!-- Hint -->
+            <p class="absolute bottom-4 left-1/2 -translate-x-1/2 text-text-muted text-xs">
+              <span class="hidden sm:inline">Use arrow keys to navigate · Click image for full size · Press Esc to close</span>
+              <span class="sm:hidden">Swipe to navigate · Tap image for full size</span>
+            </p>
           </div>
-        )}
 
-        <!-- Footer -->
-        <footer class="pt-8 border-t border-ember/20">
-          <Button href="/photos" variant="secondary">
-            ← All Photos
-          </Button>
-        </footer>
-      </div>
+          <!-- Full Image Overlay (for viewing original size) -->
+          <div
+            id="fullsize-overlay"
+            class="fullsize-overlay fixed inset-0 z-[60] bg-void/99 opacity-0 pointer-events-none transition-opacity duration-300 overflow-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Full size image"
+          >
+            <button
+              id="fullsize-close"
+              class="fixed top-4 right-4 z-10 w-12 h-12 rounded-full bg-surface/80 border border-ember/30 flex items-center justify-center text-text-primary hover:bg-surface hover:border-ember transition-all"
+              aria-label="Close full size view"
+            >
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <div class="min-h-full flex items-center justify-center p-4">
+              <img
+                id="fullsize-image"
+                src=""
+                alt=""
+                class="max-w-none cursor-zoom-out"
+              />
+            </div>
+          </div>
+
+          <!-- Store image data for JS -->
+          <script id="lightbox-data" type="application/json" set:html={JSON.stringify(lightboxImages)}></script>
+
+          <!-- Album Footer Info -->
+          <div class="max-w-2xl mx-auto text-readable">
+            <!-- Tags -->
+            {photo.data.tags.length > 0 && (
+              <div class="flex flex-wrap justify-center gap-2 mb-8">
+                {photo.data.tags.filter(tag => tag !== 'album').map((tag) => (
+                  <Badge variant="outline">{tag}</Badge>
+                ))}
+              </div>
+            )}
+
+            <!-- Content (photographer notes) -->
+            {photo.body && (
+              <div class="prose-photo mb-12 text-center">
+                <Content />
+              </div>
+            )}
+
+            <!-- Footer -->
+            <footer class="pt-8 border-t border-ember/20 text-center">
+              <Button href="/photos" variant="secondary">
+                ← All Photos
+              </Button>
+            </footer>
+          </div>
+        </Fragment>
+      ) : (
+        <!-- ==================== SINGLE PHOTO VIEW ==================== -->
+        <Fragment>
+          <!-- Photo Display -->
+          <div class="mb-12">
+            <div class="rounded-lg bg-surface border border-ember/20 overflow-hidden">
+              {photo.data.image ? (
+                <Image
+                  src={photo.data.image}
+                  alt={photo.data.title}
+                  width={1400}
+                  height={933}
+                  class="w-full h-auto"
+                  loading="eager"
+                />
+              ) : (
+                <div class="aspect-[3/2] flex items-center justify-center">
+                  <span class="text-8xl text-ember/30 font-display font-light select-none">❋</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="max-w-2xl mx-auto text-readable">
+            <header class="mb-8">
+              <h1 class="text-3xl md:text-4xl font-display font-light text-text-primary mb-4">
+                <span class="glow-photo">{photo.data.title}</span>
+              </h1>
+
+              {photo.data.description && (
+                <p class="text-lg text-text-secondary leading-relaxed">
+                  {photo.data.description}
+                </p>
+              )}
+            </header>
+
+            <!-- Metadata -->
+            <dl class="grid grid-cols-2 gap-4 mb-8 p-6 bg-surface/30 rounded-lg border border-ember/10">
+              <div>
+                <dt class="text-sm text-text-muted">Date</dt>
+                <dd class="text-text-secondary">{formatDate(photo.data.date)}</dd>
+              </div>
+              {photo.data.location && (
+                <div>
+                  <dt class="text-sm text-text-muted">Location</dt>
+                  <dd class="text-text-secondary">{photo.data.location}</dd>
+                </div>
+              )}
+              {photo.data.camera && (
+                <div>
+                  <dt class="text-sm text-text-muted">Camera</dt>
+                  <dd class="text-text-secondary">{photo.data.camera}</dd>
+                </div>
+              )}
+            </dl>
+
+            <!-- Tags -->
+            {photo.data.tags.length > 0 && (
+              <div class="flex flex-wrap gap-2 mb-8">
+                {photo.data.tags.map((tag) => (
+                  <Badge variant="outline">{tag}</Badge>
+                ))}
+              </div>
+            )}
+
+            <!-- Content (photographer notes) -->
+            {photo.body && (
+              <div class="prose-photo mb-12">
+                <Content />
+              </div>
+            )}
+
+            <!-- Footer -->
+            <footer class="pt-8 border-t border-ember/20">
+              <Button href="/photos" variant="secondary">
+                ← All Photos
+              </Button>
+            </footer>
+          </div>
+        </Fragment>
+      )}
     </div>
   </article>
 </Layout>
+
+{isAlbum && (
+  <script>
+    // Lightbox carousel functionality
+    document.addEventListener('DOMContentLoaded', initLightbox);
+    document.addEventListener('astro:page-load', initLightbox);
+
+    function initLightbox() {
+      const dataEl = document.getElementById('lightbox-data');
+      if (!dataEl) return;
+
+      const images: { src: string; width: number; height: number }[] = JSON.parse(dataEl.textContent || '[]');
+      if (images.length === 0) return;
+
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement;
+      const lightboxCounter = document.getElementById('lightbox-counter');
+      const closeBtn = document.getElementById('lightbox-close');
+      const prevBtn = document.getElementById('lightbox-prev');
+      const nextBtn = document.getElementById('lightbox-next');
+      const albumGrid = document.getElementById('album-grid');
+      const fullsizeOverlay = document.getElementById('fullsize-overlay');
+      const fullsizeImage = document.getElementById('fullsize-image') as HTMLImageElement;
+      const fullsizeClose = document.getElementById('fullsize-close');
+
+      if (!lightbox || !lightboxImage || !albumGrid) return;
+
+      let currentIndex = 0;
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      // Open lightbox
+      function openLightbox(index: number) {
+        currentIndex = index;
+        updateImage();
+        lightbox.classList.remove('opacity-0', 'pointer-events-none');
+        lightbox.classList.add('opacity-100', 'pointer-events-auto');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // Close lightbox
+      function closeLightbox() {
+        lightbox.classList.add('opacity-0', 'pointer-events-none');
+        lightbox.classList.remove('opacity-100', 'pointer-events-auto');
+        document.body.style.overflow = '';
+      }
+
+      // Update displayed image
+      function updateImage() {
+        const img = images[currentIndex];
+        lightboxImage.src = img.src;
+        lightboxImage.alt = `Photo ${currentIndex + 1}`;
+        if (lightboxCounter) {
+          lightboxCounter.textContent = `${currentIndex + 1} / ${images.length}`;
+        }
+      }
+
+      // Navigate
+      function goToNext() {
+        currentIndex = (currentIndex + 1) % images.length;
+        updateImage();
+      }
+
+      function goToPrev() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        updateImage();
+      }
+
+      // Full size view
+      function openFullSize() {
+        if (!fullsizeOverlay || !fullsizeImage) return;
+        fullsizeImage.src = images[currentIndex].src;
+        fullsizeOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        fullsizeOverlay.classList.add('opacity-100', 'pointer-events-auto');
+      }
+
+      function closeFullSize() {
+        if (!fullsizeOverlay) return;
+        fullsizeOverlay.classList.add('opacity-0', 'pointer-events-none');
+        fullsizeOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+      }
+
+      // Event listeners - Grid images
+      albumGrid.querySelectorAll('.album-image').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const index = parseInt(btn.getAttribute('data-index') || '0', 10);
+          openLightbox(index);
+        });
+      });
+
+      // Close button
+      closeBtn?.addEventListener('click', closeLightbox);
+
+      // Navigation buttons
+      prevBtn?.addEventListener('click', goToPrev);
+      nextBtn?.addEventListener('click', goToNext);
+
+      // Click on image for full size
+      lightboxImage.addEventListener('click', openFullSize);
+
+      // Close full size
+      fullsizeClose?.addEventListener('click', closeFullSize);
+      fullsizeOverlay?.addEventListener('click', (e) => {
+        if (e.target === fullsizeOverlay || e.target === fullsizeImage) {
+          closeFullSize();
+        }
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('opacity-100')) return;
+
+        // If full size is open, only handle escape
+        if (fullsizeOverlay?.classList.contains('opacity-100')) {
+          if (e.key === 'Escape') {
+            closeFullSize();
+          }
+          return;
+        }
+
+        switch (e.key) {
+          case 'ArrowLeft':
+            goToPrev();
+            break;
+          case 'ArrowRight':
+            goToNext();
+            break;
+          case 'Escape':
+            closeLightbox();
+            break;
+        }
+      });
+
+      // Touch/swipe support
+      lightbox.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      lightbox.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      }, { passive: true });
+
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) {
+            goToNext(); // Swipe left = next
+          } else {
+            goToPrev(); // Swipe right = prev
+          }
+        }
+      }
+
+      // Click outside image to close
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox || (e.target as HTMLElement).id === 'lightbox-image-container') {
+          closeLightbox();
+        }
+      });
+    }
+  </script>
+)}
 
 <style>
   .glow-photo {
     text-shadow:
       0 0 20px var(--color-ember),
       0 0 40px var(--color-spark);
+  }
+
+  .album-image {
+    contain: layout;
+  }
+
+  /* Lightbox styles */
+  .lightbox.opacity-100 {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .fullsize-overlay.opacity-100 {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Prevent body scroll when lightbox is open */
+  :global(body.lightbox-open) {
+    overflow: hidden;
   }
 </style>
 

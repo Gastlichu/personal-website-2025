@@ -896,4 +896,303 @@ src/
 
 ---
 
-*Last updated: 2026-01-16 (Phase 16)*
+## 2026-01-17 — Photo Albums & Polish Session
+
+### Phase 17: Page Polish, Photo Albums & Lightbox
+
+Major session adding refined page transitions, photo album support with lightbox carousel, and various UX improvements.
+
+**What was built:**
+
+**Page Transitions Polish:**
+- Custom **"emerge" animation** replacing standard fade
+  - Content scales from 98% → 100%
+  - Blur from 4px → 0
+  - translateY from 10px → 0
+  - Creates a "rising from the void" effect
+- **Layered glow overlay** during transitions
+  - Three overlapping orbs (orchid, ember, wisteria)
+  - Each orb animates independently with different timing
+  - More dynamic than previous single-glow overlay
+- 200ms out / 300ms in timing with custom easing
+
+**Loading States:**
+- New `Skeleton.astro` component — shimmer loading placeholder
+- New `SkeletonCard.astro` component — pre-built card skeleton with title, meta, text lines
+- **Stagger animations** for content grids
+  - `.stagger-children` class applies sequential delays to child elements
+  - Each item fades/slides in 0.05s after the previous
+  - Applied to photo and gallery grids
+
+**Scroll-Reveal Signature:**
+- Fixed footer with "© 2025 José Angel"
+- Appears when user scrolls to bottom 15% of page
+- Smooth opacity transition (0.5s)
+- Uses `document.body` as scroll container (not window) due to overscroll settings
+- Pointer-events disabled to not interfere with content
+
+**Navigation Fixes:**
+- **Removed `transition:persist`** from all navigation elements
+  - Was causing menu state to not update across page transitions
+  - Old DOM elements were persisting with stale initialization state
+- Changed initialization check from `dataset.initialized` to `_navInitialized` property
+- Navigation now properly re-initializes after each View Transition
+
+**Photo Albums Feature:**
+- Extended photos content schema with `images` array for album support
+- Single photo entry can now contain multiple images
+- Album pages display grid of all images with counter badge ("12 Photos")
+- Created **Dinoland U.S.A.** album with 12 images from Animal Kingdom trip
+- Cover image system: first image in `images` array or separate `image` field
+
+**Lightbox Carousel:**
+- Click any photo in album → opens full-screen carousel view
+- **Navigation methods:**
+  - Previous/Next arrow buttons
+  - Keyboard: ← → arrow keys
+  - Keyboard: Escape to close
+  - Touch: swipe left/right gestures
+  - Click outside image to close
+- **Image counter** showing current position (e.g., "5 / 12")
+- **Full-size view:** Click image in carousel → opens original in new tab
+- Optimized images via `getImage()` at 1600px width for carousel
+- Smooth transitions with backdrop blur
+
+**Image Format Fix:**
+- Discovered HEIC images with .jpeg extension were failing Astro build
+- Fixed using `sips -s format jpeg "$f" --out "$f"` to convert to actual JPEG
+- All gallery images now properly optimized
+
+**Files created:**
+- `src/components/ui/Skeleton.astro` — Base shimmer loading placeholder
+- `src/components/ui/SkeletonCard.astro` — Pre-built card skeleton
+- `src/content/photos/dinoland-animal-kingdom.md` — Album entry with 12 images
+- `src/assets/gallery/Dinoland_AnimalKingdom_October_2024/` — 12 JPEG images
+
+**Files modified:**
+- `src/layouts/Layout.astro` — Emerge transition, layered overlay, scroll-reveal signature
+- `src/styles/global.css` — Stagger animations, overscroll behavior
+- `src/components/Navigation.astro` — Removed transition:persist, fixed initialization
+- `src/content/config.ts` — Added `images` array to photos schema
+- `src/pages/photos/index.astro` — Album badge display ("X Photos")
+- `src/pages/photos/[slug].astro` — Complete rewrite with album view and lightbox carousel
+
+**Technical notes:**
+- Emerge animation uses separate keyframes for scale, blur, and translate
+- Lightbox uses `getImage()` from `astro:assets` for optimized carousel images
+- Touch gesture detection uses `touchstart`/`touchend` with 50px threshold
+- Scroll signature listens on `document.body` scroll, not window (body is scroll container)
+- Stagger animation delays use CSS `animation-delay` with `--nth-child` selectors
+
+**CSS Animation Highlights:**
+```css
+/* Emerge transition - content rises from the void */
+@keyframes emerge-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.98) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Stagger children animation */
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+/* ... up to nth-child(10) */
+```
+
+---
+
+## Current Project State
+
+### File Structure
+```
+public/
+├── favicon.svg
+├── favicon-16x16.png
+├── favicon-32x32.png
+├── favicon-192x192.png
+├── favicon-512x512.png
+├── apple-touch-icon.png
+├── og-image.svg
+├── og-image.png
+├── site.webmanifest
+└── BRANDING-ASSETS.md
+
+src/
+├── assets/
+│   ├── gallery/
+│   │   ├── README.md
+│   │   └── Dinoland_AnimalKingdom_October_2024/
+│   │       └── (12 JPEG images)
+│   └── games/
+│       ├── README.md
+│       ├── rocket-upgrade.png
+│       └── seance-sphere.png
+├── components/
+│   ├── ui/
+│   │   ├── Badge.astro
+│   │   ├── Button.astro
+│   │   ├── Card.astro
+│   │   ├── GlowText.astro
+│   │   ├── Input.astro
+│   │   ├── Link.astro
+│   │   ├── Skeleton.astro
+│   │   ├── SkeletonCard.astro
+│   │   └── index.ts
+│   ├── ContentContainer.astro
+│   ├── Navigation.astro
+│   └── ParticleField.astro
+├── content/
+│   ├── blog/
+│   │   └── building-cosmic-ocean.md
+│   ├── gallery/
+│   │   ├── abyssal-bloom.md
+│   │   ├── chimeric-whispers.md
+│   │   ├── coral-depths.md
+│   │   ├── nebula-heart.md
+│   │   ├── stardust-memory.md
+│   │   └── the-waning-light.md
+│   ├── games/
+│   │   ├── rocket-upgrade.md
+│   │   └── seance-sphere.md
+│   ├── photos/
+│   │   ├── desert-stars.md
+│   │   ├── dinoland-animal-kingdom.md
+│   │   ├── forest-fog.md
+│   │   └── midnight-tide.md
+│   ├── webcomic/
+│   │   ├── chapter-1-page-1.md
+│   │   └── chapter-1-page-2.md
+│   ├── links/
+│   │   ├── shop-prints.md
+│   │   ├── shop-commissions.md
+│   │   ├── social-bluesky.md
+│   │   ├── social-github.md
+│   │   ├── portfolio-itch.md
+│   │   └── support-kofi.md
+│   └── config.ts
+├── layouts/
+│   └── Layout.astro
+├── pages/
+│   ├── blog/
+│   │   ├── index.astro
+│   │   └── [slug].astro
+│   ├── gallery/
+│   │   ├── index.astro
+│   │   └── [slug].astro
+│   ├── games/
+│   │   ├── index.astro
+│   │   └── [slug].astro
+│   ├── photos/
+│   │   ├── index.astro
+│   │   └── [slug].astro
+│   ├── webcomic/
+│   │   ├── index.astro
+│   │   └── [slug].astro
+│   ├── links/
+│   │   └── index.astro
+│   ├── 404.astro
+│   ├── about.astro
+│   ├── index.astro
+│   ├── rss.xml.ts
+│   └── style-guide.astro
+└── styles/
+    └── global.css
+```
+
+### What's Working
+- [x] Breathing background with animated blobs
+- [x] Particle field with cursor interaction
+- [x] Navigation with 8 rooms (hamburger dropdown + constellation overlay)
+- [x] View Transitions with custom emerge animation
+- [x] Room-specific color vibes (9 rooms including hidden style-guide, each with unique palette)
+- [x] Component library (Button, Card, Link, GlowText, Input, Badge, Skeleton, SkeletonCard)
+- [x] Typography scale
+- [x] Style guide reference page
+- [x] Mobile responsive
+- [x] Accessibility (reduced motion, keyboard nav, ARIA)
+- [x] Content collections for blog, gallery, games, webcomic, photos, links
+- [x] Individual post/artwork/game/comic/photo pages with dynamic routing
+- [x] Prose styling for blog content
+- [x] Directional particle drift during room transitions
+- [x] Under construction banner
+- [x] Meta tags / SEO / Open Graph
+- [x] Favicon and branding assets (SVG + PNG variants)
+- [x] Image optimization (Astro `<Image />` component)
+- [x] Games room with project showcase
+- [x] Webcomic room with chapter navigation and reader
+- [x] Photos room with photography gallery
+- [x] **Photo albums with multiple images per entry**
+- [x] **Lightbox carousel with swipe/keyboard/button navigation**
+- [x] **Full-size image view from lightbox**
+- [x] Links room (linktree-style external links directory)
+- [x] Optimized transitions (emerge animation, layered glow overlay)
+- [x] Smart loading overlay (appears after 30ms threshold)
+- [x] **Stagger animations for content grids**
+- [x] **Scroll-reveal signature at page bottom**
+- [x] Real game entries with preview images (Rocket Upgrade, Séance Sphere)
+- [x] iOS scroll stability (particle field no longer resets on address bar changes)
+- [x] Dual-button navigation (hamburger + constellation, mutually exclusive)
+- [x] Animated constellation lines (undulating bezier curves)
+- [x] Floating star animations with twinkling starfield background
+- [x] Content container component for readable prose
+- [x] Real blog content (Building Cosmic Ocean collaboration report)
+- [x] Performance: particle fade during transitions, no backdrop-blur
+- [x] Dark/light mode (Cosmic ↔ Twilight themes)
+- [x] Theme toggle in kebab menu + sun/eclipse toggle in constellation
+- [x] PNG favicon variants (16, 32, 192, 512)
+- [x] Apple touch icon (180x180)
+- [x] Open Graph image (1200x630)
+- [x] RSS feed (`/rss.xml`)
+- [x] Text shadows for readability (replaces content containers)
+- [x] 404 "Lost in the Void" error page
+- [x] Room color transitions fixed (blob colors update during navigation)
+- [x] Theme persistence across View Transitions
+- [x] Mobile-friendly close hint in constellation menu
+- [x] Larger, more readable typography scale
+- [x] Consistent loading overlay across devices
+
+### Not Yet Implemented
+- [ ] Contact form integration
+
+---
+
+## Design System Reference
+
+**Color palette:** See `src/styles/global.css` `@theme` block
+**Typography:** Outfit (display) + DM Sans (body)
+**Full design system:** `/Users/superdog/Documents/AppsDev/Web-Pages/Gastlichu.com/cosmic-ocean-design-system.md`
+
+---
+
+## Notes & Decisions
+
+1. **View Transitions + Scripts:** Scripts don't re-run after client-side navigation. Solved with `is:inline` scripts and initialization guards, plus `astro:page-load` event listeners.
+
+2. **Particle persistence:** Canvas element uses `transition:persist` so particles don't reset when navigating between rooms.
+
+3. **Room colors:** Rather than animating blob colors (which would require JavaScript), using Tailwind classes with `transition-colors` for smooth CSS transitions when the page swaps.
+
+4. **Component approach:** Built both utility classes AND Astro components. Classes for flexibility, components for convenience and props-based variants.
+
+5. **iOS resize events:** iOS Safari triggers `resize` events when the address bar hides/shows during scroll. This only changes viewport height, not width. Track width to distinguish real resizes from address bar changes.
+
+6. **Dual navigation modes:** Users can toggle between traditional hamburger dropdown and constellation overlay. Each button opens its own menu, with mutual exclusivity.
+
+7. **SVG alignment for constellation:** Using `preserveAspectRatio="none"` allows SVG coordinates to map directly to percentage-positioned DOM elements. Without this, the SVG would maintain aspect ratio and coordinates wouldn't align with menu items.
+
+8. **Navigation persistence:** Removed `transition:persist` from navigation elements because it was preventing proper re-initialization after View Transitions. Navigation now re-initializes on each page load.
+
+9. **Photo albums:** Extended photos schema to support both single images (`image`) and multiple images (`images` array). Album pages automatically detect multi-image entries and render a grid with lightbox.
+
+10. **Scroll container:** Body element is the scroll container (not window) due to overscroll behavior settings. Scripts checking scroll position must use `document.body.scrollTop` instead of `window.scrollY`.
+
+---
+
+*Last updated: 2026-01-17 (Phase 17)*
