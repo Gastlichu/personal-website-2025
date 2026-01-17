@@ -103,7 +103,7 @@ function formatDate(date: Date): string {
           <!-- Lightbox Carousel -->
           <div
             id="lightbox"
-            class="lightbox fixed inset-0 z-50 bg-void/98 opacity-0 pointer-events-none transition-opacity duration-300"
+            class="lightbox fixed inset-0 z-[100] bg-void/98 opacity-0 pointer-events-none transition-opacity duration-300"
             role="dialog"
             aria-modal="true"
             aria-label="Photo carousel"
@@ -145,31 +145,32 @@ function formatDate(date: Date): string {
               </svg>
             </button>
 
-            <!-- Image container -->
-            <div id="lightbox-image-container" class="absolute inset-0 flex items-center justify-center p-16 sm:p-20">
+            <!-- Image container - fills viewport with smart cropping -->
+            <div id="lightbox-image-container" class="absolute inset-x-0 top-16 bottom-16 sm:inset-16 flex items-center justify-center">
               <img
                 id="lightbox-image"
                 src=""
                 alt=""
-                class="max-w-full max-h-full object-contain cursor-zoom-in transition-transform duration-300"
+                class="w-full h-full object-cover rounded-lg cursor-zoom-in transition-transform duration-300"
               />
             </div>
 
             <!-- Hint -->
-            <p class="absolute bottom-4 left-1/2 -translate-x-1/2 text-text-muted text-xs">
-              <span class="hidden sm:inline">Use arrow keys to navigate · Click image for full size · Press Esc to close</span>
-              <span class="sm:hidden">Swipe to navigate · Tap image for full size</span>
+            <p class="absolute bottom-4 left-1/2 -translate-x-1/2 text-text-muted text-xs text-center px-4">
+              <span class="hidden sm:inline">Use arrow keys to navigate · Click image for full uncropped view · Esc to close</span>
+              <span class="sm:hidden">Swipe to navigate · Tap image for full view</span>
             </p>
           </div>
 
-          <!-- Full Image Overlay (for viewing original size) -->
+          <!-- Full Image Overlay (for viewing original size with zoom) -->
           <div
             id="fullsize-overlay"
-            class="fullsize-overlay fixed inset-0 z-[60] bg-void/99 opacity-0 pointer-events-none transition-opacity duration-300 overflow-auto"
+            class="fullsize-overlay fixed inset-0 z-[200] bg-void/99 opacity-0 pointer-events-none transition-opacity duration-300"
             role="dialog"
             aria-modal="true"
-            aria-label="Full size image"
+            aria-label="Full size image with zoom control"
           >
+            <!-- Close button -->
             <button
               id="fullsize-close"
               class="fixed top-4 right-4 z-10 w-12 h-12 rounded-full bg-surface/80 border border-ember/30 flex items-center justify-center text-text-primary hover:bg-surface hover:border-ember transition-all"
@@ -179,13 +180,72 @@ function formatDate(date: Date): string {
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
             </button>
-            <div class="min-h-full flex items-center justify-center p-4">
-              <img
-                id="fullsize-image"
-                src=""
-                alt=""
-                class="max-w-none cursor-zoom-out"
-              />
+
+            <!-- Image container with scroll -->
+            <div id="fullsize-scroll-container" class="absolute inset-0 top-0 bottom-20 overflow-auto">
+              <div id="fullsize-image-wrapper" class="min-h-full flex items-center justify-center p-4">
+                <img
+                  id="fullsize-image"
+                  src=""
+                  alt=""
+                  class="max-w-none transition-transform duration-200 origin-center"
+                  style="transform: scale(1);"
+                />
+              </div>
+            </div>
+
+            <!-- Zoom Controls -->
+            <div class="fixed bottom-0 inset-x-0 z-10 bg-gradient-to-t from-void via-void/90 to-transparent pt-8 pb-4 px-6">
+              <div class="max-w-md mx-auto">
+                <!-- Zoom slider -->
+                <div class="flex items-center gap-4">
+                  <button
+                    id="zoom-out-btn"
+                    class="w-10 h-10 rounded-full bg-surface/80 border border-ember/30 flex items-center justify-center text-text-primary hover:bg-surface hover:border-ember transition-all"
+                    aria-label="Zoom out"
+                  >
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="M21 21l-4.35-4.35M8 11h6" />
+                    </svg>
+                  </button>
+
+                  <div class="flex-1 flex flex-col gap-1">
+                    <input
+                      type="range"
+                      id="zoom-slider"
+                      min="50"
+                      max="300"
+                      value="100"
+                      step="10"
+                      class="zoom-slider w-full h-2 bg-surface/50 rounded-full appearance-none cursor-pointer"
+                      aria-label="Zoom level"
+                    />
+                    <div class="flex justify-between text-xs text-text-muted">
+                      <span>50%</span>
+                      <span id="zoom-level" class="text-text-secondary font-mono">100%</span>
+                      <span>300%</span>
+                    </div>
+                  </div>
+
+                  <button
+                    id="zoom-in-btn"
+                    class="w-10 h-10 rounded-full bg-surface/80 border border-ember/30 flex items-center justify-center text-text-primary hover:bg-surface hover:border-ember transition-all"
+                    aria-label="Zoom in"
+                  >
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="M21 21l-4.35-4.35M11 8v6M8 11h6" />
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Hint -->
+                <p class="text-center text-text-muted text-xs mt-3">
+                  <span class="hidden sm:inline">Scroll to pan when zoomed · Press Esc to close</span>
+                  <span class="sm:hidden">Drag to pan when zoomed · Tap X to close</span>
+                </p>
+              </div>
             </div>
           </div>
 
@@ -327,12 +387,18 @@ function formatDate(date: Date): string {
       const fullsizeOverlay = document.getElementById('fullsize-overlay');
       const fullsizeImage = document.getElementById('fullsize-image') as HTMLImageElement;
       const fullsizeClose = document.getElementById('fullsize-close');
+      const fullsizeScrollContainer = document.getElementById('fullsize-scroll-container');
+      const zoomSlider = document.getElementById('zoom-slider') as HTMLInputElement;
+      const zoomLevel = document.getElementById('zoom-level');
+      const zoomInBtn = document.getElementById('zoom-in-btn');
+      const zoomOutBtn = document.getElementById('zoom-out-btn');
 
       if (!lightbox || !lightboxImage || !albumGrid) return;
 
       let currentIndex = 0;
       let touchStartX = 0;
       let touchEndX = 0;
+      let currentZoom = 100;
 
       // Open lightbox
       function openLightbox(index: number) {
@@ -371,10 +437,34 @@ function formatDate(date: Date): string {
         updateImage();
       }
 
+      // Zoom functionality
+      function setZoom(value: number) {
+        currentZoom = Math.max(50, Math.min(300, value));
+        if (fullsizeImage) {
+          fullsizeImage.style.transform = `scale(${currentZoom / 100})`;
+        }
+        if (zoomSlider) {
+          zoomSlider.value = String(currentZoom);
+        }
+        if (zoomLevel) {
+          zoomLevel.textContent = `${currentZoom}%`;
+        }
+      }
+
+      function resetZoom() {
+        setZoom(100);
+        // Reset scroll position
+        if (fullsizeScrollContainer) {
+          fullsizeScrollContainer.scrollTop = 0;
+          fullsizeScrollContainer.scrollLeft = 0;
+        }
+      }
+
       // Full size view
       function openFullSize() {
         if (!fullsizeOverlay || !fullsizeImage) return;
         fullsizeImage.src = images[currentIndex].src;
+        resetZoom();
         fullsizeOverlay.classList.remove('opacity-0', 'pointer-events-none');
         fullsizeOverlay.classList.add('opacity-100', 'pointer-events-auto');
       }
@@ -383,7 +473,21 @@ function formatDate(date: Date): string {
         if (!fullsizeOverlay) return;
         fullsizeOverlay.classList.add('opacity-0', 'pointer-events-none');
         fullsizeOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+        resetZoom();
       }
+
+      // Zoom event listeners
+      zoomSlider?.addEventListener('input', () => {
+        setZoom(parseInt(zoomSlider.value, 10));
+      });
+
+      zoomInBtn?.addEventListener('click', () => {
+        setZoom(currentZoom + 25);
+      });
+
+      zoomOutBtn?.addEventListener('click', () => {
+        setZoom(currentZoom - 25);
+      });
 
       // Event listeners - Grid images
       albumGrid.querySelectorAll('.album-image').forEach((btn) => {
@@ -403,10 +507,14 @@ function formatDate(date: Date): string {
       // Click on image for full size
       lightboxImage.addEventListener('click', openFullSize);
 
-      // Close full size
+      // Close full size (only via X button or Escape - not by clicking image since user may want to pan)
       fullsizeClose?.addEventListener('click', closeFullSize);
-      fullsizeOverlay?.addEventListener('click', (e) => {
-        if (e.target === fullsizeOverlay || e.target === fullsizeImage) {
+
+      // Close when clicking the scroll container background (not the image)
+      fullsizeScrollContainer?.addEventListener('click', (e) => {
+        // Only close if clicking directly on the scroll container or image wrapper (not the image itself)
+        const target = e.target as HTMLElement;
+        if (target.id === 'fullsize-scroll-container' || target.id === 'fullsize-image-wrapper') {
           closeFullSize();
         }
       });
@@ -494,6 +602,73 @@ function formatDate(date: Date): string {
   /* Prevent body scroll when lightbox is open */
   :global(body.lightbox-open) {
     overflow: hidden;
+  }
+
+  /* Zoom slider styling */
+  .zoom-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(30, 30, 45, 0.6);
+    border-radius: 9999px;
+    height: 8px;
+  }
+
+  .zoom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-ember), var(--color-spark));
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(212, 165, 116, 0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .zoom-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 15px rgba(212, 165, 116, 0.6);
+  }
+
+  .zoom-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-ember), var(--color-spark));
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(212, 165, 116, 0.4);
+  }
+
+  .zoom-slider::-moz-range-track {
+    background: rgba(30, 30, 45, 0.6);
+    border-radius: 9999px;
+    height: 8px;
+  }
+
+  /* Fullsize overlay scroll container */
+  #fullsize-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 165, 116, 0.4) transparent;
+  }
+
+  #fullsize-scroll-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  #fullsize-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #fullsize-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(212, 165, 116, 0.4);
+    border-radius: 4px;
+  }
+
+  #fullsize-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 165, 116, 0.6);
   }
 </style>
 

@@ -1028,7 +1028,11 @@ src/
 ├── assets/
 │   ├── gallery/
 │   │   ├── README.md
-│   │   └── Dinoland_AnimalKingdom_October_2024/
+│   │   ├── Dinoland_AnimalKingdom_October_2024/
+│   │   │   └── (12 JPEG images)
+│   │   ├── Himalayas_Animal_Kingdom_2024/
+│   │   │   └── (10 JPEG images)
+│   │   └── Safari_Animal_Kingdom_2024/
 │   │       └── (12 JPEG images)
 │   └── games/
 │       ├── README.md
@@ -1062,10 +1066,9 @@ src/
 │   │   ├── rocket-upgrade.md
 │   │   └── seance-sphere.md
 │   ├── photos/
-│   │   ├── desert-stars.md
 │   │   ├── dinoland-animal-kingdom.md
-│   │   ├── forest-fog.md
-│   │   └── midnight-tide.md
+│   │   ├── himalayas-animal-kingdom.md
+│   │   └── safari-animal-kingdom.md
 │   ├── webcomic/
 │   │   ├── chapter-1-page-1.md
 │   │   └── chapter-1-page-2.md
@@ -1121,7 +1124,6 @@ src/
 - [x] Individual post/artwork/game/comic/photo pages with dynamic routing
 - [x] Prose styling for blog content
 - [x] Directional particle drift during room transitions
-- [x] Under construction banner
 - [x] Meta tags / SEO / Open Graph
 - [x] Favicon and branding assets (SVG + PNG variants)
 - [x] Image optimization (Astro `<Image />` component)
@@ -1130,7 +1132,8 @@ src/
 - [x] Photos room with photography gallery
 - [x] **Photo albums with multiple images per entry**
 - [x] **Lightbox carousel with swipe/keyboard/button navigation**
-- [x] **Full-size image view from lightbox**
+- [x] **Full-size image view with zoom slider control (50%-300%)**
+- [x] **Real Disney World photo galleries** (Dinoland, Himalayas, Safari)
 - [x] Links room (linktree-style external links directory)
 - [x] Optimized transitions (emerge animation, layered glow overlay)
 - [x] Smart loading overlay (appears after 30ms threshold)
@@ -1193,6 +1196,90 @@ src/
 
 10. **Scroll container:** Body element is the scroll container (not window) due to overscroll behavior settings. Scripts checking scroll position must use `document.body.scrollTop` instead of `window.scrollY`.
 
+11. **Z-index stacking contexts:** The `<main>` element should NOT have a z-index if you need fixed overlays inside it to appear above sibling elements (like navigation). A parent's z-index creates a stacking context that constrains children.
+
 ---
 
-*Last updated: 2026-01-17 (Phase 17)*
+## 2026-01-17 — Continued Polish & Content
+
+### Phase 18: Lightbox Enhancements, Z-Index Fixes & Real Content
+
+Improved the photo viewing experience with zoom controls, fixed layering issues, and replaced placeholders with real content.
+
+**What was built:**
+
+**Lightbox & Fullscreen Improvements:**
+- **Zoom slider control** in fullscreen image view
+  - Range from 50% to 300% with slider and +/- buttons
+  - Styled slider thumb with ember/spark gradient
+  - Zoom level indicator showing current percentage
+  - Scrollable container for panning when zoomed in
+  - Zoom resets when opening new image or closing
+- **Z-index layering fix** — Navigation was appearing above lightbox/fullscreen overlays
+  - Root cause: `<main>` had `z-10` which created a stacking context, trapping nested overlays
+  - Fix: Removed `z-10` from `<main>` so overlays can stack above navigation
+  - Lightbox carousel: `z-[100]` (above nav's `z-50`)
+  - Fullscreen overlay: `z-[200]` (above everything)
+- **Image sizing improvement** — Changed from `object-contain` to `object-cover` in lightbox carousel
+  - Images now fill the viewing area (with smart cropping)
+  - Prevents tiny images on mobile for portrait/landscape mismatches
+  - Users can tap for full uncropped view with zoom
+
+**Bug Fixes:**
+- **iOS hamburger menu scroll** — Menu was cut off on small screens with no way to scroll
+  - Added `max-h-[calc(100vh-10rem)] overflow-y-auto` to dropdown container
+- **Removed under construction banner** — Site is ready for real content
+- **Fullscreen close behavior** — Clicking image no longer closes overlay (allows panning); use X button or Escape
+
+**New Photo Galleries:**
+- **Expedition Everest & Asia** — 10 photos from Animal Kingdom's Himalayan-themed area
+- **Kilimanjaro Safaris** — 12 photos from the African safari experience
+- Both galleries from October 24, 2024, shot on iPhone 16 Pro Max
+
+**Content Cleanup:**
+- Removed placeholder photo entries (desert-stars, forest-fog, midnight-tide)
+- Simplified photos index page — removed featured/regular separation
+- All galleries now display in a single unified grid
+- Updated page description to match actual content
+
+**Files created:**
+- `src/content/photos/himalayas-animal-kingdom.md` — 10 photos
+- `src/content/photos/safari-animal-kingdom.md` — 12 photos
+- `src/assets/gallery/Himalayas_Animal_Kingdom_2024/` — 10 JPEG images
+- `src/assets/gallery/Safari_Animal_Kingdom_2024/` — 12 JPEG images
+
+**Files removed:**
+- `src/content/photos/desert-stars.md`
+- `src/content/photos/forest-fog.md`
+- `src/content/photos/midnight-tide.md`
+
+**Files modified:**
+- `src/layouts/Layout.astro` — Removed `z-10` from main element
+- `src/pages/photos/index.astro` — Simplified to single grid, removed featured section
+- `src/pages/photos/[slug].astro` — Added zoom controls, fixed z-indices, improved image sizing
+- `src/components/Navigation.astro` — Added overflow-y-auto to hamburger menu
+- `src/content/photos/dinoland-animal-kingdom.md` — Changed featured to false
+
+**Technical notes:**
+- Zoom uses CSS `transform: scale()` on the image element
+- Scroll container has custom scrollbar styling (ember tint)
+- Z-index hierarchy: Nav (50) < Lightbox (100) < Fullscreen (200)
+- Removing z-index from main allows fixed children to escape stacking context
+
+**CSS Highlights:**
+```css
+/* Zoom slider styling */
+.zoom-slider::-webkit-slider-thumb {
+  background: linear-gradient(135deg, var(--color-ember), var(--color-spark));
+  box-shadow: 0 0 10px rgba(212, 165, 116, 0.4);
+}
+
+/* Scrollbar for zoom pan area */
+#fullsize-scroll-container {
+  scrollbar-color: rgba(212, 165, 116, 0.4) transparent;
+}
+```
+
+---
+
+*Last updated: 2026-01-17 (Phase 18)*

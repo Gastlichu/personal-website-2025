@@ -148,13 +148,6 @@ const colors = roomColors[room];
     <!-- Navigation -->
     <Navigation />
 
-    <!-- Under Construction Banner -->
-    <div class="fixed top-0 inset-x-0 z-40 bg-surface/80 backdrop-blur-sm border-b border-orchid/20 py-2 px-4 text-center" transition:persist="banner">
-      <p class="text-sm text-text-muted font-body">
-        <span class="text-orchid">Under construction</span> — Content is placeholder text while the site takes shape
-      </p>
-    </div>
-
     <!-- Subtle Transition Overlay (only shows for slow loads) -->
     <div id="transition-overlay" class="transition-overlay" aria-hidden="true" transition:persist="overlay">
       <div class="overlay-glow glow-1"></div>
@@ -163,7 +156,7 @@ const colors = roomColors[room];
     </div>
 
     <!-- Content -->
-    <main class="relative z-10 pt-10 page-content" transition:animate={emergeTransition}>
+    <main class="relative page-content" transition:animate={emergeTransition}>
       <slot />
     </main>
 

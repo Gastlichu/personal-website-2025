@@ -19,7 +19,7 @@ images:
   - "../../assets/gallery/Dinoland_AnimalKingdom_October_2024/IMG_0270.jpeg"
   - "../../assets/gallery/Dinoland_AnimalKingdom_October_2024/IMG_0273.jpeg"
 tags: ["disney", "animal kingdom", "dinoland", "travel", "florida", "album"]
-featured: true
+featured: false
 ---
 
 Chester and Hester's Dino-Rama brings the carnival spirit to Animal Kingdom with its whimsical roadside dinosaur attraction theming. Every detail tells the story of a fictional tourist trap where fossils meet fun.
