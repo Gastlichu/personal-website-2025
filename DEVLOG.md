@@ -1131,8 +1131,8 @@ src/
 - [x] Webcomic room with chapter navigation and reader
 - [x] Photos room with photography gallery
 - [x] **Photo albums with multiple images per entry**
-- [x] **Lightbox carousel with swipe/keyboard/button navigation**
-- [x] **Full-size image view with zoom slider control (50%-300%)**
+- [x] **Unified lightbox carousel with integrated zoom (50%-300%)**
+- [x] **Swipe/keyboard/button navigation with zoom preservation**
 - [x] **Real Disney World photo galleries** (Dinoland, Himalayas, Safari)
 - [x] Links room (linktree-style external links directory)
 - [x] Optimized transitions (emerge animation, layered glow overlay)
@@ -1275,11 +1275,72 @@ Improved the photo viewing experience with zoom controls, fixed layering issues,
 }
 
 /* Scrollbar for zoom pan area */
-#fullsize-scroll-container {
+#lightbox-scroll-container {
   scrollbar-color: rgba(212, 165, 116, 0.4) transparent;
 }
 ```
 
 ---
 
-*Last updated: 2026-01-17 (Phase 18)*
+## 2026-01-19 — Carousel UX Improvements
+
+### Phase 19: Unified Carousel with Zoom
+
+Simplified the photo viewing experience by combining the carousel and fullscreen zoom into a single, cohesive interface.
+
+**What changed:**
+
+**Unified Carousel + Zoom:**
+- Removed the separate fullscreen overlay entirely
+- Zoom controls now integrated directly into the carousel
+- Single layer of interaction: click photo → carousel with zoom + navigation
+- Simpler mental model for users
+
+**Image Display:**
+- Changed from `object-cover` (cropped) to `object-contain` (full image visible)
+- Images now display in their entirety at 100% zoom
+- Zoom in to see details, zoom out to see more context
+
+**Zoom Behavior:**
+- **Zoom preserved when navigating** — Switching between photos maintains your zoom level
+- Zoom only resets when opening or closing the carousel
+- Range: 50% to 300%
+- Keyboard shortcuts: `+`/`=` to zoom in, `-`/`_` to zoom out
+
+**Navigation:**
+- Arrow buttons and keyboard arrows for prev/next
+- Swipe gestures on mobile (disabled when zoomed >100% to allow panning)
+- Counter shows current position (e.g., "3 / 12")
+- Click outside image or press Escape to close
+
+**Nav Menu Fix:**
+- Navigation buttons (hamburger + constellation) now hide when lightbox opens
+- Prevents z-index conflicts across different stacking contexts
+- Buttons reappear when lightbox closes
+- Cleaner full-screen viewing experience
+
+**Files modified:**
+- `src/pages/photos/[slug].astro` — Complete carousel rewrite:
+  - Removed fullscreen overlay HTML
+  - Added zoom controls to carousel
+  - Updated JavaScript for unified zoom/navigation
+  - Added hide/show navigation functions
+  - Changed image styling to `object-contain`
+
+**Technical notes:**
+- Z-index set to `z-[9999]` for maximum layering safety
+- Navigation hidden via `display: none` when lightbox opens
+- Wrapper size dynamically adjusted when zoom >100% to enable scrolling
+- Touch swipe detection disabled when zoomed to prevent accidental navigation while panning
+
+**UX Flow (simplified):**
+```
+Grid View → Click photo → Carousel opens (100% zoom, full image)
+                        → Use slider/buttons to zoom
+                        → Arrow keys or swipe to navigate (zoom preserved)
+                        → Escape or click outside to close
+```
+
+---
+
+*Last updated: 2026-01-19 (Phase 19)*
